@@ -109,6 +109,7 @@ public class VoiceMenu extends AppCompatActivity {
         }
         @Override
         public void onEndOfSpeech() {
+            img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
         }
         @Override
         public void onError(int error) {
@@ -127,15 +128,10 @@ public class VoiceMenu extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     private void NextActivity(String input) {
         if (input.equals("메뉴") || input.equals("맨유") || input.equals("메뉴판")) {
-            //Intent intent = new Intent(this, VoiceSpeakingMenu.class);
-            //startActivity(intent);
+            Intent intent = new Intent(this, VoiceSpeakingMenu.class);
+            startActivity(intent);
         } else if (input.equals("주문")) {
             //Intent intent = new Intent(this, VoiceSTTOrder.class);
             //startActivity(intent);
