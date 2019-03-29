@@ -78,8 +78,8 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         Log.d("mGroupList", "" + mGroupList);
     }
 
+    String result = " ";
     public void putKeyword(String menu) {
-        String result = " ";
         for (int i = 0; i < mGroupList.size(); i++) {
             result = menu;
             VoiceStarting(addVoice1 + result + addVoice2);
@@ -108,7 +108,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         return text.toString();
     }
 
-
     private void VoiceStarting(final String mvoice) {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -131,10 +130,23 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                     img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                     StartSTT();
                 }
-            }, 18000);
+            }, 22000);
         }
     }
 
+    class STTThread2 extends Thread {
+        @Override
+        public void run() {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+                    StartSTT();
+                }
+            },3000);
+        }
+    }
     private void StartSTT() {
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
@@ -157,6 +169,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         }
         @Override
         public void onEndOfSpeech() {
+            img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
         }
         @Override
         public void onError(int error) {
@@ -175,30 +188,28 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         }
     };
 
-
     @Override
     public void onItemClicked(Menu menu, int position) {
         title = menu.getTitle();
         price = menu.getPrice();
         //Intent intent = new Intent(this, NVoiceOrderFinal.class);
         //intent.putExtra("clickedItem",menu);
-
         //startActivity(intent);
         Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
     }
 
-
-    private String returnSTT() {
-        //음성이 끝나고 바로 뜰 수 있게
-        //음성 받아오기- 메뉴 or 주문
-        return "메뉴";
-    }
-
     private void NextActivity(String input) {
-        if (input == "메뉴") {//replay menu
-        } else if (input == "주문") {// go order page
+        if (input.equals("메뉴")||input.equals("메뉴판")||input.equals("맨유")) {//replay menu
+            VoiceStarting(addVoice1 + result + addVoice2);
+            STTThread sttThread = new STTThread();
+            sttThread.start();
+        } else if (input.equals("주문")) {// go order page
+            Intent intent = new Intent(this, VoiceSTTOrder.class);
+            startActivity(intent);
         } else {//Not menu or order
-
+            VoiceStarting("메뉴판 혹은 주문으로 다시 한번 말씀해 주세요");
+            STTThread2 sttThread2 = new STTThread2();
+            sttThread2.start();
         }
     }
 }
