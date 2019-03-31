@@ -155,4 +155,20 @@ public class VoiceMenu extends AppCompatActivity {
             sttThread2.start();
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tts.stop();
+        tts.shutdown();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VoiceStarting(startVoice);
+
+        STTThread sttThread = new STTThread();
+        sttThread.start();
+    }
 }
