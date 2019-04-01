@@ -57,22 +57,18 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private int count = -1;
     private ArrayList<Menu> menuList;
     private Button button;
+    Handler delayHandler;
+    String Menutts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voicespeakingmenu);
         img_mic = (ImageView) findViewById(R.id.img_voicespeakingmenu);
-
         button = (Button) findViewById(R.id.button);
 
-        String Menutts = readRawTextFile(this);
-        getKeywordArray();
-        putKeyword(Menutts);
-
-        STTThread sttThread = new STTThread();
-        sttThread.start();
-
+        Menutts = readRawTextFile(this);
+        Menutts = readRawTextFile(this);
         ArrayList<Menu> items = new ArrayList<Menu>();
         for (int i = 0; i < 15; i++) {//get item here
             items.add(new Menu("유채" + i, "바보" + i));
@@ -105,9 +101,22 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getKeywordArray();
+        putKeyword(Menutts);
 
+        delayHandler = new Handler();
+        delayHandler.postDelayed(new Runnable() {
 
-
+            @Override
+            public void run() {
+                img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+                StartSTT();
+            }
+        }, 22000);
+    }
     public void getKeywordArray() {
         mGroupList = new ArrayList<ArrayList<String>>();
 
@@ -161,20 +170,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         });
     }
 
-    class STTThread extends Thread {
-        @Override
-        public void run() {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
-                    StartSTT();
-                }
-            }, 22000);
-        }
-    }
-
     class STTThread2 extends Thread {
         @Override
         public void run() {
@@ -214,6 +209,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         }
         @Override
         public void onError(int error) {
+            img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
             Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
         }
         @Override
@@ -243,9 +239,15 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
     private void NextActivity(String input) {
         if (input.equals("메뉴")||input.equals("메뉴판")||input.equals("맨유")) {//replay menu
+            delayHandler.removeMessages(0);
             VoiceStarting(addVoice1 + result + addVoice2);
-            STTThread sttThread = new STTThread();
-            sttThread.start();
+            delayHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+                    StartSTT();
+                }
+            }, 22000);
         } else if (input.equals("주문")) {// go order page
             Intent intent = new Intent(this, VoiceSTTOrder.class);
             startActivity(intent);
@@ -254,5 +256,13 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             STTThread2 sttThread2 = new STTThread2();
             sttThread2.start();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tts.stop();
+        tts.shutdown();
+        delayHandler.removeMessages(0);
     }
 }
