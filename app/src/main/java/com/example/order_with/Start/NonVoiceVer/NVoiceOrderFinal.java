@@ -36,5 +36,4 @@ public class NVoiceOrderFinal extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
     }
-
 }
