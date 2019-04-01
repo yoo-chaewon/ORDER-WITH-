@@ -1,5 +1,6 @@
 package com.example.order_with.menuItem;
 
+import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.example.order_with.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
     ArrayList<Menu> myItems;
@@ -45,6 +47,8 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.menu_item, viewGroup, false);
 
+
+
         return new ViewHolder(view);
     }
 
@@ -68,5 +72,6 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
     public int getItemCount() {
         return myItems.size();
     }
+
 
 }
