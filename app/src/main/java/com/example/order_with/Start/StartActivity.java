@@ -33,13 +33,11 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
         if ( Build.VERSION.SDK_INT >= 23 ){
-            // 퍼미션 체크
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
                     Manifest.permission.RECORD_AUDIO},PERMISSION);
         }
 
         VoiceStarting();
-
         Button btnNonVoiceStart = (Button) findViewById(R.id.btnNonVoiceStart_start);
         btnNonVoiceStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,13 +70,6 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        VoiceStarting();
-        Toast.makeText(this, "다시 돌아옴", Toast.LENGTH_SHORT).show();
-    }
-
     public void startNonVoiceVer() {
         Intent intent = new Intent(this, NVoiceMenu.class);
         startActivity(intent);
@@ -90,4 +81,17 @@ public class StartActivity extends AppCompatActivity {
         registerReceiver(headsetReceiver, filter);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tts.stop();
+        tts.shutdown();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VoiceStarting();
+        startVoiceVer();
+    }
 }

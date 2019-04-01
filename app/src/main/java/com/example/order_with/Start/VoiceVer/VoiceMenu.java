@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.provider.ContactsContract;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -32,32 +33,43 @@ public class VoiceMenu extends AppCompatActivity {
     SpeechRecognizer mRecognizer;
     ArrayList<String> matches;
     ImageView img_mic;
+    Handler delayHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voicemenu);
-        img_mic = (ImageView)findViewById(R.id.img_mic_voicemenu);
-
-        VoiceStarting(startVoice);
-
-        STTThread sttThread = new STTThread();
-        sttThread.start();
-
-        Button btn_menu = (Button)findViewById(R.id.go_menu);
+        img_mic = (ImageView) findViewById(R.id.img_mic_voicemenu);
+        Button btn_menu = (Button) findViewById(R.id.go_menu);
         btn_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NextActivity("메뉴");
             }
         });
-
-        Button btn_order = (Button)findViewById(R.id.go_order);
+        Button btn_order = (Button) findViewById(R.id.go_order);
         btn_order.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NextActivity("주문");
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VoiceStarting(startVoice);
+
+        delayHandler = new Handler();
+        delayHandler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+                StartSTT();
+            }
+        }, 8000);
     }
 
     private void VoiceStarting(final String in_voice) {
@@ -72,20 +84,6 @@ public class VoiceMenu extends AppCompatActivity {
         });
     }
 
-    class STTThread extends Thread {
-        @Override
-        public void run() {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
-                    StartSTT();
-                }
-            },8000);
-        }
-    }
-
     class STTThread2 extends Thread {
         @Override
         public void run() {
@@ -96,13 +94,13 @@ public class VoiceMenu extends AppCompatActivity {
                     img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                     StartSTT();
                 }
-            },5000);
+            }, 5000);
         }
     }
 
     private void StartSTT() {
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
         mRecognizer = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
         mRecognizer.setRecognitionListener(listener);
         mRecognizer.startListening(intent);
@@ -112,31 +110,40 @@ public class VoiceMenu extends AppCompatActivity {
         @Override
         public void onReadyForSpeech(Bundle params) {
         }
+
         @Override
         public void onBeginningOfSpeech() {
         }
+
         @Override
         public void onRmsChanged(float rmsdB) {
         }
+
         @Override
         public void onBufferReceived(byte[] buffer) {
         }
+
         @Override
         public void onEndOfSpeech() {
             img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
         }
+
         @Override
         public void onError(int error) {
             Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
+            img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
         }
+
         @Override
         public void onResults(Bundle results) {
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             NextActivity(matches.get(0));
         }
+
         @Override
         public void onPartialResults(Bundle partialResults) {
         }
+
         @Override
         public void onEvent(int eventType, Bundle params) {
         }
@@ -154,5 +161,13 @@ public class VoiceMenu extends AppCompatActivity {
             STTThread2 sttThread2 = new STTThread2();
             sttThread2.start();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tts.stop();
+        tts.shutdown();
+        delayHandler.removeMessages(0);
     }
 }

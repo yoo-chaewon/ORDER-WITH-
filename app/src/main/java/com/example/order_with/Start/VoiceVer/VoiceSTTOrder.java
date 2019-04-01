@@ -35,17 +35,13 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     private ArrayList<String> mChildList = null;
     ImageView img_mic;
     ArrayList<String> matches;
+    Handler delayHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voicespeakingmenu);
         img_mic = (ImageView) findViewById(R.id.img_voicespeakingmenu);
-
-        VoiceStarting();
-
-        STTThread sttThread = new STTThread();
-        sttThread.start();
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
@@ -60,6 +56,22 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         adapter.setOnItemClickListener(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VoiceStarting();
+
+        delayHandler = new Handler();
+        delayHandler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+                StartSTT();
+            }
+        }, 4000);
+    }
+
     private void VoiceStarting() {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -70,20 +82,6 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
                 }
             }
         });
-    }
-
-    class STTThread extends Thread {
-        @Override
-        public void run() {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
-                    StartSTT();
-                }
-            }, 5000);
-        }
     }
 
     private void StartSTT() {
@@ -112,6 +110,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         }
         @Override
         public void onError(int error) {
+            img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
             Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
         }
         @Override
@@ -136,5 +135,13 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
 
         //startActivity(intent);
         Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tts.stop();
+        tts.shutdown();
+        delayHandler.removeMessages(0);
     }
 }
