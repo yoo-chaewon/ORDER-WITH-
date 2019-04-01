@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,17 +12,20 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_mic_none" />
+        android:src="@drawable/ic_mic_none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_voicespeakingmenu"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/img_voicespeakingmenu">
 
     </android.support.v7.widget.RecyclerView>
 
@@ -29,7 +33,11 @@
         android:id="@+id/rv_addmenu"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@color/yellow">
+        android:background="@color/yellow"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_voicespeakingmenu">
 
     </android.support.v7.widget.RecyclerView>
 
@@ -37,6 +45,8 @@
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Button" />
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="0dp" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

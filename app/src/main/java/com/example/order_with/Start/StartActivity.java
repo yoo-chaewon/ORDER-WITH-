@@ -18,6 +18,8 @@ import static android.speech.tts.TextToSpeech.ERROR;
 import com.example.order_with.R;
 import com.example.order_with.Start.NonVoiceVer.NVoiceMenu;
 import com.example.order_with.Start.VoiceVer.HeadsetReceiver;
+import com.example.order_with.Start.VoiceVer.VoiceMenu;
+import com.example.order_with.Start.VoiceVer.VoiceSTTOrder;
 
 import java.util.Locale;
 
@@ -25,7 +27,6 @@ public class StartActivity extends AppCompatActivity {
     private TextToSpeech tts;
     String startVoice = "음성이 필요하시면 기계 하단에 이어폰을 꽂아주세요.";
     final int PERMISSION = 1;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +44,13 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startNonVoiceVer();
+            }
+        });
+        Button btnVoiceStart = (Button)findViewById(R.id.btnVoiceStart_start);
+        btnVoiceStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startVoiceVer_temp();
             }
         });
         startVoiceVer();
@@ -72,6 +80,11 @@ public class StartActivity extends AppCompatActivity {
 
     public void startNonVoiceVer() {
         Intent intent = new Intent(this, NVoiceMenu.class);
+        startActivity(intent);
+    }
+
+    private void startVoiceVer_temp() {
+        Intent intent = new Intent(this, VoiceMenu.class);
         startActivity(intent);
     }
 
