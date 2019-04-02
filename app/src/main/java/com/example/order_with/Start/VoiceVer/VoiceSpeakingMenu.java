@@ -54,7 +54,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private MenuAdapter mAdapter;
     private RecyclerView ListrecyclerView;
     private LinearLayoutManager selectLayoutManager;
-    private int count = -1;
     private ArrayList<Menu> menuList;
     private Button button;
     String Menutts;
@@ -69,14 +68,16 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
         button = (Button) findViewById(R.id.button);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
-        recyclerView.setLayoutManager(layoutManager);
+        String Menutts = readRawTextFile(this);
 
         ArrayList<Menu> items = new ArrayList<Menu>();
         for (int i = 0; i < 15; i++) {//get item here
             items.add(new Menu("유채" + i, "바보" + i));
         }
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
+        recyclerView.setLayoutManager(layoutManager);
 
         selectLayoutManager = new LinearLayoutManager(this);
         selectLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -118,6 +119,8 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             }
         }, 22000);
     }
+
+
 
     public void getKeywordArray() {
         mGroupList = new ArrayList<ArrayList<String>>();
@@ -236,6 +239,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         menuList.add(selectMenu);
         mAdapter.notifyDataSetChanged();
     }
+
 
     private void NextActivity(String input) {
         if (input.equals("메뉴")||input.equals("메뉴판")||input.equals("맨유")) {//replay menu

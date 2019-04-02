@@ -10,11 +10,15 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.order_with.R;
+import com.example.order_with.Start.NonVoiceVer.NVoiceOrderFinal;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
 
@@ -36,6 +40,11 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     ImageView img_mic;
     ArrayList<String> matches;
     Handler delayHandler;
+    private MenuAdapter mAdapter;
+    private RecyclerView ListrecyclerView;
+    private LinearLayoutManager selectLayoutManager;
+    private ArrayList<Menu> menuList;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,17 +52,39 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         setContentView(R.layout.activity_voicespeakingmenu);
         img_mic = (ImageView) findViewById(R.id.img_voicespeakingmenu);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
-        recyclerView.setLayoutManager(layoutManager);
+        button = (Button) findViewById(R.id.button);
 
         ArrayList<Menu> items = new ArrayList<Menu>();
         for (int i = 0; i < 15; i++) {//get item here
             items.add(new Menu("유채" + i, "바보" + i));
         }
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
+        recyclerView.setLayoutManager(layoutManager);
+
+        selectLayoutManager = new LinearLayoutManager(this);
+        selectLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+        ListrecyclerView = (RecyclerView) findViewById(R.id.rv_addmenu);
+        ListrecyclerView.setLayoutManager(selectLayoutManager);
+
+        menuList = new ArrayList<Menu>();
+        mAdapter = new MenuAdapter(menuList);
+        ListrecyclerView.setAdapter(mAdapter);
+
         MenuAdapter adapter = new MenuAdapter(items);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(VoiceSTTOrder.this, NVoiceOrderFinal.class);
+                intent.putExtra("clickedItem",menuList);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -132,6 +163,11 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         price = menu.getPrice();
         //Intent intent = new Intent(this, NVoiceOrderFinal.class);
         //intent.putExtra("clickedItem",menu);
+
+        Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
+        Menu selectMenu = new Menu("메뉴이름" + title, "가격" + price);
+        menuList.add(selectMenu);
+        mAdapter.notifyDataSetChanged();
 
         //startActivity(intent);
         Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
