@@ -68,7 +68,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         button = (Button) findViewById(R.id.button);
 
         Menutts = readRawTextFile(this);
-        Menutts = readRawTextFile(this);
         ArrayList<Menu> items = new ArrayList<Menu>();
         for (int i = 0; i < 15; i++) {//get item here
             items.add(new Menu("유채" + i, "바보" + i));
