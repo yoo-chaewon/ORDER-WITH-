@@ -120,8 +120,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         }, 22000);
     }
 
-
-
     public void getKeywordArray() {
         mGroupList = new ArrayList<ArrayList<String>>();
 
@@ -174,6 +172,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             }
         });
     }
+
     class STTThread2 extends Thread {
         @Override
         public void run() {
@@ -233,13 +232,14 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     public void onItemClicked(Menu menu, int position) {
         title = menu.getTitle();
         price = menu.getPrice();
-
+        //Intent intent = new Intent(this, NVoiceOrderFinal.class);
+        //intent.putExtra("clickedItem",menu);
+        //startActivity(intent);
         Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
         Menu selectMenu = new Menu("메뉴이름" + title, "가격" + price);
         menuList.add(selectMenu);
         mAdapter.notifyDataSetChanged();
     }
-
 
     private void NextActivity(String input) {
         if (input.equals("메뉴")||input.equals("메뉴판")||input.equals("맨유")) {//replay menu

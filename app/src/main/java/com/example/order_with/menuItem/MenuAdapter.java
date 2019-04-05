@@ -47,8 +47,6 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.menu_item, viewGroup, false);
 
-
-
         return new ViewHolder(view);
     }
 
@@ -72,6 +70,5 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
     public int getItemCount() {
         return myItems.size();
     }
-
 
 }
