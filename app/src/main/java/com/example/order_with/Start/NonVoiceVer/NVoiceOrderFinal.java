@@ -2,6 +2,7 @@ package com.example.order_with.Start.NonVoiceVer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.speech.tts.TextToSpeech;
@@ -16,12 +17,15 @@ import com.example.order_with.menuItem.MenuAdapter;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Locale;
 
 import static android.speech.tts.TextToSpeech.ERROR;
 
 
 public class NVoiceOrderFinal extends AppCompatActivity {
+    private MenuAdapter mAdapter;
     private MenuAdapter mAdapter;
     private TextToSpeech tts;
     String startVoice;
@@ -38,6 +42,7 @@ public class NVoiceOrderFinal extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         Intent intent = getIntent();
+        ArrayList<Menu> menuList = intent.getParcelableArrayListExtra("clickedItem");
         menuList = intent.getParcelableArrayListExtra("clickedItem");
 
         MenuAdapter adapter = new MenuAdapter(menuList);
@@ -58,7 +63,7 @@ public class NVoiceOrderFinal extends AppCompatActivity {
             }
         }, 8000);
     }
-    public void MakeString(){
+    public void MakeString() {
         String voice1 = "장바구니에는";
         String voice2 = "가 있습니다. 맞으면 결제, 틀리면 다시를 말해주세요.";
         String menu = " ";
