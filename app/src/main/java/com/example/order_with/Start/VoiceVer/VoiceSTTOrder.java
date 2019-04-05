@@ -80,7 +80,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(VoiceSTTOrder.this, NVoiceOrderFinal.class);
+                Intent intent = new Intent(VoiceSTTOrder.this, VoiceOrderFinal.class);
                 intent.putExtra("clickedItem",menuList);
                 startActivity(intent);
             }

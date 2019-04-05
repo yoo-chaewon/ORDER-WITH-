@@ -24,6 +24,7 @@
         <activity android:name=".Start.VoiceVer.VoiceSpeakingMenu">
         </activity>
         <activity android:name=".Start.VoiceVer.VoiceSTTOrder"/>
+        <activity android:name=".Start.VoiceVer.VoiceOrderFinal"/>
 
         <receiver android:name=".Start.VoiceVer.HeadsetReceiver">
             <intent-filter>
