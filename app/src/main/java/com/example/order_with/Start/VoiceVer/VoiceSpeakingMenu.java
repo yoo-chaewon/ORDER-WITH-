@@ -87,14 +87,14 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
         String Menutts = readRawTextFile(this);
 
+        Intent intent = getIntent();
+        items = intent.getParcelableArrayListExtra("servermenu");
+        Log.d("voiceSpeakingMenu", items.get(0).getTitle());
+
         ArrayList<Menu> items = new ArrayList<Menu>();
         for (int i = 0; i < 15; i++) {//get item here
             items.add(new Menu("유채" + i, "바보" + i));
         }
-
-        //Intent intent = getIntent();
-        //items = intent.getParcelableArrayListExtra("servermenu");
-        //Log.d("ddddd", items.get(0).getTitle());
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
