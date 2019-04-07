@@ -22,9 +22,8 @@
         android:id="@+id/go_menu"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginStart="65dp"
-        android:layout_marginLeft="65dp"
-        android:layout_marginBottom="200dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginLeft="100dp"
         android:background="@drawable/bottom_round10"
         android:backgroundTint="@color/yellow"
         android:padding="10sp"
@@ -32,15 +31,17 @@
         android:textColor="@color/white"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/go_order"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/go_order" />
 
     <Button
         android:id="@+id/go_order"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginEnd="52dp"
-        android:layout_marginRight="52dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginBottom="200dp"
         android:background="@drawable/bottom_round10"
         android:backgroundTint="@color/yellow"
         android:padding="10sp"
@@ -48,19 +49,20 @@
         android:textColor="@color/white"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/go_menu"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/go_menu" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/img_mic_voicemenu"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/ic_mic_none"
         android:tint="@color/green"
         app:layout_constraintBottom_toTopOf="@+id/go_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/ic_mic_none" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
@@ -38,7 +39,7 @@ public class NVoiceOrderFinal extends AppCompatActivity {
         setContentView(R.layout.activity_nvoicefinal);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvNVoicefinal);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this,2);
         recyclerView.setLayoutManager(layoutManager);
 
         Intent intent = getIntent();
@@ -50,39 +51,5 @@ public class NVoiceOrderFinal extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MakeString();
-        VoiceStarting();
-        delayHandler = new Handler();
-        delayHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //StartSTT();
-            }
-        }, 8000);
-    }
-    public void MakeString() {
-        String voice1 = "장바구니에는";
-        String voice2 = "가 있습니다. 맞으면 결제, 틀리면 다시를 말해주세요.";
-        String menu = " ";
-        for (int i = 0; i < menuList.size(); i++){
-            menu += menuList.get(i).getTitle();
-        }
-        startVoice = voice1 + menu + voice2;
-    }
-
-    private void VoiceStarting() {
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != ERROR) {
-                    tts.setLanguage(Locale.KOREAN);
-                    tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null);
-                }
-            }
-        });
-    }
 
 }

@@ -13,18 +13,19 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity"/>
         <activity android:name=".Start.StartActivity">
+        </activity>
+        <activity android:name=".Start.NonVoiceVer.NVoiceMenu"/>
+        <activity android:name=".Start.NonVoiceVer.NVoiceOrderFinal"/>
+        <activity android:name=".Start.VoiceVer.VoiceMenu">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Start.NonVoiceVer.NVoiceMenu"/>
-        <activity android:name=".Start.NonVoiceVer.NVoiceOrderFinal"/>
-        <activity android:name=".Start.VoiceVer.VoiceMenu">
-        </activity>
         <activity android:name=".Start.VoiceVer.VoiceSpeakingMenu">
         </activity>
         <activity android:name=".Start.VoiceVer.VoiceSTTOrder"/>
+        <activity android:name=".Start.VoiceVer.VoiceOrderFinal"/>
 
         <receiver android:name=".Start.VoiceVer.HeadsetReceiver">
             <intent-filter>
