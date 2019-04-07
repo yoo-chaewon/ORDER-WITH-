@@ -23,18 +23,34 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.order_with.R;
 import com.example.order_with.Start.NonVoiceVer.NVoiceOrderFinal;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import static android.speech.tts.TextToSpeech.ERROR;
 
@@ -58,6 +74,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private Button button;
     String Menutts;
     Handler delayHandler;
+    ArrayList<Menu> items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +91,10 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         for (int i = 0; i < 15; i++) {//get item here
             items.add(new Menu("유채" + i, "바보" + i));
         }
+
+        //Intent intent = getIntent();
+        //items = intent.getParcelableArrayListExtra("servermenu");
+        //Log.d("ddddd", items.get(0).getTitle());
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
@@ -96,7 +117,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(VoiceSpeakingMenu.this, NVoiceOrderFinal.class);
+                Intent intent = new Intent(VoiceSpeakingMenu.this, VoiceOrderFinal.class);
                 intent.putExtra("clickedItem",menuList);
                 startActivity(intent);
             }

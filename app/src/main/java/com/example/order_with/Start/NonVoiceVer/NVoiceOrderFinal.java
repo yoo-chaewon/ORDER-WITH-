@@ -16,6 +16,7 @@ import static android.speech.tts.TextToSpeech.ERROR;
 
 public class NVoiceOrderFinal extends AppCompatActivity {
     private MenuAdapter mAdapter;
+  
     private TextToSpeech tts;
     String startVoice;
     ArrayList<Menu> menuList;
@@ -31,7 +32,7 @@ public class NVoiceOrderFinal extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         Intent intent = getIntent();
-        ArrayList<Menu> menuList = intent.getParcelableArrayListExtra("clickedItem");
+        //ArrayList<Menu> menuList = intent.getParcelableArrayListExtra("clickedItem");
         menuList = intent.getParcelableArrayListExtra("clickedItem");
 
 
