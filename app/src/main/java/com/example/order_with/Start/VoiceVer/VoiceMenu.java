@@ -182,10 +182,11 @@ public class VoiceMenu extends AppCompatActivity {
         if (input.equals("메뉴") || input.equals("맨유") || input.equals("메뉴판")) {
             Intent intent = new Intent(this, VoiceSpeakingMenu.class);
             Log.d("nextActivity", items.get(1).getTitle());
-            intent.putExtra("servermenu",items); ////////////////////////////////////////////
+            intent.putExtra("servermenu",items); //
             startActivity(intent);
         } else if (input.equals("주문")) {
             Intent intent = new Intent(this, VoiceSTTOrder.class);
+            intent.putExtra("menuToOrder",items);
             startActivity(intent);
         } else {//Not menu or order
             VoiceStarting("메뉴판 혹은 주문으로 다시 한번 말씀해 주세요");

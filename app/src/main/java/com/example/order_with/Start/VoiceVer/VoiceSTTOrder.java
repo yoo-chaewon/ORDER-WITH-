@@ -45,19 +45,18 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     private LinearLayoutManager selectLayoutManager;
     private ArrayList<Menu> menuList;
     private Button button;
+    ArrayList<Menu> items;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voicespeakingmenu);
         img_mic = (ImageView) findViewById(R.id.img_voicespeakingmenu);
-
         button = (Button) findViewById(R.id.button);
 
-        ArrayList<Menu> items = new ArrayList<Menu>();
-        for (int i = 0; i < 15; i++) {//get item here
-            items.add(new Menu("유채" + i, "바보" + i));
-        }
+        Intent intent = getIntent();
+        items = intent.getParcelableArrayListExtra("menuToOrder");
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
@@ -163,14 +162,10 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         price = menu.getPrice();
         //Intent intent = new Intent(this, NVoiceOrderFinal.class);
         //intent.putExtra("clickedItem",menu);
-
-        Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
-        Menu selectMenu = new Menu("메뉴이름" + title, "가격" + price);
+        Menu selectMenu = new Menu(title, price);
         menuList.add(selectMenu);
         mAdapter.notifyDataSetChanged();
-
         //startActivity(intent);
-        Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
