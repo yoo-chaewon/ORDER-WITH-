@@ -18,10 +18,8 @@ import java.util.Locale;
 import static android.speech.tts.TextToSpeech.ERROR;
 
 public class VoiceOrderFinal extends AppCompatActivity {
-    private MenuAdapter mAdapter;
     private TextToSpeech tts;
     String startVoice;
-    ArrayList<Menu> menuList;
     Handler delayHandler;
 
     @Override
@@ -34,7 +32,7 @@ public class VoiceOrderFinal extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         Intent intent = getIntent();
-        ArrayList<Menu> menuList = intent.getParcelableArrayListExtra("clickedItem");
+        ArrayList<Menu> menuList;
         menuList = intent.getParcelableArrayListExtra("clickedItem");
 
         String voice1 = "장바구니에는";

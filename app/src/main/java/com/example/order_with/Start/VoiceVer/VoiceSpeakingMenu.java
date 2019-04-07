@@ -70,55 +70,43 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private MenuAdapter mAdapter;
     private RecyclerView ListrecyclerView;
     private LinearLayoutManager selectLayoutManager;
-    private ArrayList<Menu> menuList;
+    private ArrayList<Menu> slectedMemu;
     private Button button;
-    String Menutts;
     Handler delayHandler;
     ArrayList<Menu> items;
+    String menuVoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voicespeakingmenu);
         img_mic = (ImageView) findViewById(R.id.img_voicespeakingmenu);
-        Menutts = readRawTextFile(this);
 
-        button = (Button) findViewById(R.id.button);
-
-        String Menutts = readRawTextFile(this);
-
-        ArrayList<Menu> items = new ArrayList<Menu>();
-        for (int i = 0; i < 15; i++) {//get item here
-            items.add(new Menu("유채" + i, "바보" + i));
-        }
-
-        //Intent intent = getIntent();
-        //items = intent.getParcelableArrayListExtra("servermenu");
-        //Log.d("ddddd", items.get(0).getTitle());
+        Intent intent = getIntent();
+        items = intent.getParcelableArrayListExtra("servermenu");
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
         recyclerView.setLayoutManager(layoutManager);
-
         selectLayoutManager = new LinearLayoutManager(this);
         selectLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-
         ListrecyclerView = (RecyclerView) findViewById(R.id.rv_addmenu);
         ListrecyclerView.setLayoutManager(selectLayoutManager);
-
-        menuList = new ArrayList<Menu>();
-        mAdapter = new MenuAdapter(menuList);
-        ListrecyclerView.setAdapter(mAdapter);
 
         MenuAdapter adapter = new MenuAdapter(items);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
 
+        slectedMemu = new ArrayList<Menu>();
+        mAdapter = new MenuAdapter(slectedMemu);
+        ListrecyclerView.setAdapter(mAdapter);
+        button = (Button) findViewById(R.id.button);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(VoiceSpeakingMenu.this, VoiceOrderFinal.class);
-                intent.putExtra("clickedItem",menuList);
+                intent.putExtra("clickedItem",slectedMemu);
                 startActivity(intent);
             }
         });
@@ -127,8 +115,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     @Override
     protected void onResume() {
         super.onResume();
-        getKeywordArray();
-        putKeyword(Menutts);
+        VoiceStarting(MakingVoiceMenu());
 
         delayHandler = new Handler();
         delayHandler.postDelayed(new Runnable() {
@@ -138,48 +125,16 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                 img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                 StartSTT();
             }
-        }, 22000);
+        }, 8000);
     }
 
-    public void getKeywordArray() {
-        mGroupList = new ArrayList<ArrayList<String>>();
-
-        for (int i = 0; i < keywordArray.size(); i++) {
-            mChildList = new ArrayList<String>();
-            mChildList.add(keywordArray.get(i));
-            mGroupList.add(mChildList);
+    private String MakingVoiceMenu(){
+        menuVoice = " ";
+        for (int i = 0; i < items.size(); i++){
+            menuVoice += items.get(i).getTitle();
         }
-        Log.d("mGroupList", "" + mGroupList);
-    }
-
-    String result = " ";
-    public void putKeyword(String menu) {
-        for (int i = 0; i < mGroupList.size(); i++) {
-            result = menu;
-            VoiceStarting(addVoice1 + result + addVoice2);
-        }
-    }
-
-    public String readRawTextFile(Context context) {
-        InputStream inputStream = context.getResources().openRawResource(R.raw.miso_menu);
-        InputStreamReader inputreader = new InputStreamReader(inputStream);
-        BufferedReader buffreader = new BufferedReader(inputreader);
-
-        String keyword;
-        keywordArray = new ArrayList<String>();
-        StringBuilder text = new StringBuilder();
-
-        try {
-            while ((keyword = buffreader.readLine()) != null) {
-                keywordArray.add(keyword);
-                text.append(keyword);
-                text.append('\n');
-            }
-        } catch (IOException e) {
-            return null;
-        }
-        Log.d("keywordArray", "" + keywordArray);
-        return text.toString();
+        String resultVoice = addVoice1 + menuVoice + addVoice2;
+        return resultVoice;
     }
 
     private void VoiceStarting(final String mvoice) {
@@ -257,15 +212,15 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         //intent.putExtra("clickedItem",menu);
         //startActivity(intent);
         Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
-        Menu selectMenu = new Menu("메뉴이름" + title, "가격" + price);
-        menuList.add(selectMenu);
+        Menu selectMenu = new Menu(title, price);
+        slectedMemu.add(selectMenu);
         mAdapter.notifyDataSetChanged();
     }
 
     private void NextActivity(String input) {
         if (input.equals("메뉴")||input.equals("메뉴판")||input.equals("맨유")) {//replay menu
             delayHandler.removeMessages(0);
-            VoiceStarting(addVoice1 + result + addVoice2);
+            VoiceStarting(addVoice1 + menuVoice + addVoice2);
             delayHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {

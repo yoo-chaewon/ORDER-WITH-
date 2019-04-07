@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -48,18 +49,26 @@ public class VoiceMenu extends AppCompatActivity {
     ImageView img_mic;
     Handler delayHandler;
     ArrayList<Menu> items;
+    RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voicemenu);
         img_mic = (ImageView) findViewById(R.id.img_mic_voicemenu);
+
+        requestQueue= Volley.newRequestQueue(this);
+
+        RequestThread requestThread = new RequestThread(); ///////
+        requestThread.start();
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
         Button btn_menu = (Button) findViewById(R.id.go_menu);
         btn_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestThread requestThread = new RequestThread(); ///////
-                requestThread.start(); ///////////////
                 NextActivity("메뉴");
             }
         });
@@ -71,10 +80,6 @@ public class VoiceMenu extends AppCompatActivity {
             }
         });
 
-
-        if(AppHelper.requestQueue == null) {
-            AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
     }
 
     @Override
@@ -173,10 +178,12 @@ public class VoiceMenu extends AppCompatActivity {
     private void NextActivity(String input) {
         if (input.equals("메뉴") || input.equals("맨유") || input.equals("메뉴판")) {
             Intent intent = new Intent(this, VoiceSpeakingMenu.class);
-            //intent.putExtra("servermenu",items); ////////////////////////////////////////////
+            Log.d("nextActivity", items.get(1).getTitle());
+            intent.putExtra("servermenu",items); //
             startActivity(intent);
         } else if (input.equals("주문")) {
             Intent intent = new Intent(this, VoiceSTTOrder.class);
+            intent.putExtra("menuToOrder",items);
             startActivity(intent);
         } else {//Not menu or order
             VoiceStarting("메뉴판 혹은 주문으로 다시 한번 말씀해 주세요");
@@ -196,7 +203,7 @@ public class VoiceMenu extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.10.101:9000/menu";
+            String url = "http://192.168.219.100:9000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
@@ -204,7 +211,7 @@ public class VoiceMenu extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
                             //println(" 응답 : " + response);
-                            Log.d("ddddd" , "응답");
+                            Log.d("ddddd", "응답");
                             processResponse(response);
                         }
                     },
@@ -225,23 +232,21 @@ public class VoiceMenu extends AppCompatActivity {
 
             // 이전 결과가 있더라도 새로 요청해서 응답을 보여줌
             request.setShouldCache(false);
-            AppHelper.requestQueue.add(request);
-            //println("요청 보냄");
+            requestQueue.add(request);
         }
     }
 
     public void processResponse(String response) {
         Gson gson = new Gson();
-
         JsonParser parser = new JsonParser();
 
-        JsonArray jsonArray = (JsonArray)parser.parse(response);
+        JsonArray jsonArray = (JsonArray) parser.parse(response);
         //println("메뉴 이름 반복문 : " + ((JsonObject) jsonArray.get(i)).get("name").getAsString());
-            items = new ArrayList<Menu>();
-            for (int i=0 ; i<jsonArray.size(); i++) {//get item here
-                items.add(new Menu(((JsonObject) jsonArray.get(i)).get("name").getAsString(),
-                        ((JsonObject) jsonArray.get(i)).get("price").getAsString()));
-            }
-            Log.d("ddddd", items.get(1).getTitle());
+        items = new ArrayList<Menu>();
+        for (int i = 0; i < jsonArray.size(); i++) {//get item here
+            items.add(new Menu(((JsonObject) jsonArray.get(i)).get("name").getAsString(),
+                    ((JsonObject) jsonArray.get(i)).get("price").getAsString()));
+        }
+        Log.d("ddddd", items.get(1).getTitle());
     }
 }
