@@ -33,11 +33,9 @@ public class NVoiceMenu extends AppCompatActivity implements MenuAdapter.MyClick
         setContentView(R.layout.activity_nvoicemenu);
 
         button = (Button) findViewById(R.id.button);
-
-        ArrayList<Menu> items = new ArrayList<Menu>();
-        for(int i = 0 ; i < 15; i++){//get item here
-            items.add(new Menu("유채" + i , "바보" + i));
-        }
+        ArrayList<Menu> items = new ArrayList<>();
+        Intent intent = getIntent();
+        items = intent.getParcelableArrayListExtra("menutoNonVoice");
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         //RecyclerView recyclerView = (RecyclerView)findViewById(R.id.rvNVoiceActivity);
@@ -75,15 +73,10 @@ public class NVoiceMenu extends AppCompatActivity implements MenuAdapter.MyClick
         price = menu.getPrice();
 
         Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
-        Menu selectMenu = new Menu("메뉴이름" + title, "가격" + price);
+        Menu selectMenu = new Menu(title, price);
         menuList.add(selectMenu);
         mAdapter.notifyDataSetChanged();
 
-        //Intent intent = new Intent(this, NVoiceOrderFinal.class);
-        //intent.putExtra("clickedItem",menu);
-
-        //startActivity(intent);
-        //Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
     }
 
 }

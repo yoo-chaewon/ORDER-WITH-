@@ -49,7 +49,6 @@ public class VoiceMenu extends AppCompatActivity {
     ImageView img_mic;
     Handler delayHandler;
     ArrayList<Menu> items;
-    //AppHelper appHelper;
     RequestQueue requestQueue;
 
     @Override
@@ -70,8 +69,6 @@ public class VoiceMenu extends AppCompatActivity {
         btn_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                RequestThread requestThread = new RequestThread(); ///////
-//                requestThread.start(); ///////////////
                 NextActivity("메뉴");
             }
         });
