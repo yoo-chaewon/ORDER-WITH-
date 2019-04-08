@@ -131,7 +131,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private String MakingVoiceMenu(){
         menuVoice = " ";
         for (int i = 0; i < items.size(); i++){
-            menuVoice += items.get(i).getTitle();
+            menuVoice += items.get(i).getTitle() + "            ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,    ";
         }
         String resultVoice = addVoice1 + menuVoice + addVoice2;
         return resultVoice;
