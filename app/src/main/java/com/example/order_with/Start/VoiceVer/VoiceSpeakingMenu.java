@@ -67,6 +67,17 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                 tts.stop();
                 tts.shutdown();
                 delayHandler.removeMessages(0);
+
+                Handler delayHandler = new Handler();
+                delayHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // TODO
+                        VoiceStarting(";;; 주문하고자 하면 주문, 다시 들으려면 메뉴 말해주세요");
+                        STTThread2 sttThread2 = new STTThread2();
+                        sttThread2.start();
+                    }
+                }, 1000);
             }
         });
     }
@@ -84,13 +95,13 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                 img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                 StartSTT();
             }
-        }, 8000);
+        }, 20000);
     }
 
     private String MakingVoiceMenu() {
         menuVoice = " ";
         for (int i = 0; i < items.size(); i++) {
-            menuVoice += items.get(i).getTitle() + "            ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,    ";
+            menuVoice += items.get(i).getTitle() + " ;;; ";
         }
         String resultVoice = addVoice1 + menuVoice + addVoice2;
         return resultVoice;
@@ -101,6 +112,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             @Override
             public void onInit(int status) {
                 if (status != ERROR) {
+                    tts.setSpeechRate((float) 0.9);//속도 설정
                     tts.setLanguage(Locale.KOREAN);
                     tts.speak(mvoice, TextToSpeech.QUEUE_FLUSH, null);
                 }
