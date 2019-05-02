@@ -203,7 +203,7 @@ public class VoiceMenu extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.22.221:9000/menu";
+            String url = "http://192.168.22.205:9000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
