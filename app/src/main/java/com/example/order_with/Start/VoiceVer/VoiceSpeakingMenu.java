@@ -1,6 +1,5 @@
 package com.example.order_with.Start.VoiceVer;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
@@ -8,70 +7,35 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.Voice;
-import android.support.v4.content.ContextCompat;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.order_with.R;
-import com.example.order_with.Start.NonVoiceVer.NVoiceOrderFinal;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import static android.speech.tts.TextToSpeech.ERROR;
 
 public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.MyClickListener {
     private TextToSpeech tts;
-    String addVoice1 = "메뉴에는";
+    String addVoice1 = "메뉴안내를 시작하겠습니다. 메뉴 듣기를 중단하고 싶으면 화면 아무곳을 터치해 주세요. 메뉴에는";
     String addVoice2 = "가 있습니다. 다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요";
-    private String title;
-    private String price;
     Intent intent;
     SpeechRecognizer mRecognizer;
-    public ArrayList<String> keywordArray;
-    private ArrayList<ArrayList<String>> mGroupList = null;
-    private ArrayList<String> mChildList = null;
     ImageView img_mic;
     ArrayList<String> matches;
-    private MenuAdapter mAdapter;
-    private RecyclerView ListrecyclerView;
     private LinearLayoutManager selectLayoutManager;
-    private ArrayList<Menu> slectedMemu;
-    private Button button;
     Handler delayHandler;
     ArrayList<Menu> items;
     String menuVoice;
@@ -90,24 +54,30 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         recyclerView.setLayoutManager(layoutManager);
         selectLayoutManager = new LinearLayoutManager(this);
         selectLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        ListrecyclerView = (RecyclerView) findViewById(R.id.rv_addmenu);
-        ListrecyclerView.setLayoutManager(selectLayoutManager);
 
         MenuAdapter adapter = new MenuAdapter(items);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
 
-        slectedMemu = new ArrayList<Menu>();
-        mAdapter = new MenuAdapter(slectedMemu);
-        ListrecyclerView.setAdapter(mAdapter);
-        button = (Button) findViewById(R.id.button);
-
-        button.setOnClickListener(new View.OnClickListener() {
+        ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.layout_voiceSpeakingmenu);
+        constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(VoiceSpeakingMenu.this, VoiceOrderFinal.class);
-                intent.putExtra("clickedItem",slectedMemu);
-                startActivity(intent);
+            public void onClick(View view) {//음성 중단//다시 듣고 싶으면 메뉴, 주문하시려면 주문을 말해주세요
+                Toast.makeText(getApplicationContext(), "화면 터치", Toast.LENGTH_SHORT).show();
+                tts.stop();
+                tts.shutdown();
+                delayHandler.removeMessages(0);
+
+                Handler delayHandler = new Handler();
+                delayHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // TODO
+                        VoiceStarting(";;; 주문하고자 하면 주문, 다시 들으려면 메뉴 말해주세요");
+                        STTThread2 sttThread2 = new STTThread2();
+                        sttThread2.start();
+                    }
+                }, 1000);
             }
         });
     }
@@ -125,13 +95,13 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                 img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                 StartSTT();
             }
-        }, 8000);
+        }, 20000);
     }
 
-    private String MakingVoiceMenu(){
+    private String MakingVoiceMenu() {
         menuVoice = " ";
-        for (int i = 0; i < items.size(); i++){
-            menuVoice += items.get(i).getTitle() + "            ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,    ";
+        for (int i = 0; i < items.size(); i++) {
+            menuVoice += items.get(i).getTitle() + " ;;; ";
         }
         String resultVoice = addVoice1 + menuVoice + addVoice2;
         return resultVoice;
@@ -142,6 +112,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             @Override
             public void onInit(int status) {
                 if (status != ERROR) {
+                    tts.setSpeechRate((float) 0.9);//속도 설정
                     tts.setLanguage(Locale.KOREAN);
                     tts.speak(mvoice, TextToSpeech.QUEUE_FLUSH, null);
                 }
@@ -159,9 +130,10 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                     img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                     StartSTT();
                 }
-            },3000);
+            }, 3000);
         }
     }
+
     private void StartSTT() {
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
@@ -169,36 +141,45 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         mRecognizer.setRecognitionListener(listener);
         mRecognizer.startListening(intent);
     }
+
     public RecognitionListener listener = new RecognitionListener() {
         @Override
         public void onReadyForSpeech(Bundle params) {
         }
+
         @Override
         public void onBeginningOfSpeech() {
         }
+
         @Override
         public void onRmsChanged(float rmsdB) {
         }
+
         @Override
         public void onBufferReceived(byte[] buffer) {
         }
+
         @Override
         public void onEndOfSpeech() {
             img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
         }
+
         @Override
         public void onError(int error) {
             img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
             Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
         }
+
         @Override
         public void onResults(Bundle results) {
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             NextActivity(matches.get(0));
         }
+
         @Override
         public void onPartialResults(Bundle partialResults) {
         }
+
         @Override
         public void onEvent(int eventType, Bundle params) {
         }
@@ -206,19 +187,10 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
     @Override
     public void onItemClicked(Menu menu, int position) {
-        title = menu.getTitle();
-        price = menu.getPrice();
-        //Intent intent = new Intent(this, NVoiceOrderFinal.class);
-        //intent.putExtra("clickedItem",menu);
-        //startActivity(intent);
-        Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
-        Menu selectMenu = new Menu(title, price);
-        slectedMemu.add(selectMenu);
-        mAdapter.notifyDataSetChanged();
     }
 
     private void NextActivity(String input) {
-        if (input.equals("메뉴")||input.equals("메뉴판")||input.equals("맨유")) {//replay menu
+        if (input.equals("메뉴") || input.equals("메뉴판") || input.equals("맨유")) {//replay menu
             delayHandler.removeMessages(0);
             VoiceStarting(addVoice1 + menuVoice + addVoice2);
             delayHandler.postDelayed(new Runnable() {
@@ -230,7 +202,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             }, 22000);
         } else if (input.equals("주문")) {// go order page
             Intent intent = new Intent(this, VoiceSTTOrder.class);
-            intent.putExtra("spmenutoOreder",items);
+            intent.putExtra("spmenutoOreder", items);
             startActivity(intent);
         } else {//Not menu or order
             VoiceStarting("메뉴판 혹은 주문으로 다시 한번 말씀해 주세요");
