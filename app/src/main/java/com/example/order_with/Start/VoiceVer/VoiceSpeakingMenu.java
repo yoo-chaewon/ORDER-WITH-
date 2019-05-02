@@ -230,6 +230,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             }, 22000);
         } else if (input.equals("주문")) {// go order page
             Intent intent = new Intent(this, VoiceSTTOrder.class);
+            intent.putExtra("spmenutoOreder",items);
             startActivity(intent);
         } else {//Not menu or order
             VoiceStarting("메뉴판 혹은 주문으로 다시 한번 말씀해 주세요");

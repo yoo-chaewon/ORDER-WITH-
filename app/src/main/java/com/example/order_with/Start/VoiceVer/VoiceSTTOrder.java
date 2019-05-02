@@ -58,6 +58,9 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         Intent intent = getIntent();
         items = intent.getParcelableArrayListExtra("menuToOrder");
 
+        Intent intent2 = getIntent();
+        items = intent2.getParcelableArrayListExtra("spmenutoOreder");
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
         recyclerView.setLayoutManager(layoutManager);
