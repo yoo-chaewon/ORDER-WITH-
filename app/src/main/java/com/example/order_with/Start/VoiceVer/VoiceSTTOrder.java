@@ -58,6 +58,9 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         Intent intent = getIntent();
         items = intent.getParcelableArrayListExtra("menuToOrder");
 
+        Intent intent2 = getIntent();
+        items = intent2.getParcelableArrayListExtra("spmenutoOreder");
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
         recyclerView.setLayoutManager(layoutManager);
@@ -147,6 +150,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         public void onResults(Bundle results) {
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             Toast.makeText(getApplicationContext(), matches.get(0), Toast.LENGTH_SHORT).show();
+            VoiceMatch(matches.get(0));
         }
         @Override
         public void onPartialResults(Bundle partialResults) {
@@ -155,6 +159,16 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         public void onEvent(int eventType, Bundle params) {
         }
     };
+
+    public void VoiceMatch(String match){
+        for (int i = 0; i < items.size(); i++){
+            if (match.equals(items.get(i).getTitle())){
+                Menu voiceSelect = new Menu(items.get(i).getTitle(), items.get(i).getPrice());
+                menuList.add(voiceSelect);
+                mAdapter.notifyDataSetChanged();
+            }
+        }
+    }
 
     @Override
     public void onItemClicked(Menu menu, int position) {

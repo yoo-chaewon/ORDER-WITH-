@@ -76,7 +76,8 @@ public class StartActivity extends AppCompatActivity {
         btnVoiceStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startNonVoiceVer();
+                Intent intent = new Intent(getApplicationContext(), VoiceMenu.class);
+                startActivity(intent);
             }
         });
         startVoiceVer();
@@ -85,7 +86,7 @@ public class StartActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.219.100:9000/menu";
+            String url = "http://192.168.22.205:9000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
