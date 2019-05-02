@@ -1,6 +1,5 @@
 package com.example.order_with.Start.VoiceVer;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
@@ -8,49 +7,22 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.Voice;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.order_with.R;
-import com.example.order_with.Start.NonVoiceVer.NVoiceOrderFinal;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import static android.speech.tts.TextToSpeech.ERROR;
 
@@ -62,16 +34,11 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private String price;
     Intent intent;
     SpeechRecognizer mRecognizer;
-    public ArrayList<String> keywordArray;
-    private ArrayList<ArrayList<String>> mGroupList = null;
-    private ArrayList<String> mChildList = null;
     ImageView img_mic;
     ArrayList<String> matches;
     private MenuAdapter mAdapter;
     private RecyclerView ListrecyclerView;
     private LinearLayoutManager selectLayoutManager;
-    private ArrayList<Menu> slectedMemu;
-    private Button button;
     Handler delayHandler;
     ArrayList<Menu> items;
     String menuVoice;
@@ -90,26 +57,11 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         recyclerView.setLayoutManager(layoutManager);
         selectLayoutManager = new LinearLayoutManager(this);
         selectLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        ListrecyclerView = (RecyclerView) findViewById(R.id.rv_addmenu);
-        ListrecyclerView.setLayoutManager(selectLayoutManager);
 
         MenuAdapter adapter = new MenuAdapter(items);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
 
-        slectedMemu = new ArrayList<Menu>();
-        mAdapter = new MenuAdapter(slectedMemu);
-        ListrecyclerView.setAdapter(mAdapter);
-        button = (Button) findViewById(R.id.button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(VoiceSpeakingMenu.this, VoiceOrderFinal.class);
-                intent.putExtra("clickedItem",slectedMemu);
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -212,9 +164,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         //intent.putExtra("clickedItem",menu);
         //startActivity(intent);
         Toast.makeText(this, "ItemName" + menu.getTitle(), Toast.LENGTH_SHORT).show();
-        Menu selectMenu = new Menu(title, price);
-        slectedMemu.add(selectMenu);
-        mAdapter.notifyDataSetChanged();
     }
 
     private void NextActivity(String input) {

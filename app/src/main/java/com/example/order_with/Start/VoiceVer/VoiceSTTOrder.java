@@ -3,7 +3,6 @@ package com.example.order_with.Start.VoiceVer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -18,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.order_with.R;
-import com.example.order_with.Start.NonVoiceVer.NVoiceOrderFinal;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
 
@@ -51,8 +49,8 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_voicespeakingmenu);
-        img_mic = (ImageView) findViewById(R.id.img_voicespeakingmenu);
+        setContentView(R.layout.activity_voicesttorder);
+        img_mic = (ImageView) findViewById(R.id.img_voicesttorder);
         button = (Button) findViewById(R.id.button);
 
         Intent intent = getIntent();
@@ -61,7 +59,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         Intent intent2 = getIntent();
         items = intent2.getParcelableArrayListExtra("spmenutoOreder");
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicesttorder);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
         recyclerView.setLayoutManager(layoutManager);
 
