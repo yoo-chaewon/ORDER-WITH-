@@ -1,6 +1,7 @@
 package com.example.order_with.Start.VoiceVer;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,6 +11,7 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -86,31 +88,46 @@ public class VoiceMenu extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         VoiceStarting(startVoice);
-
-        delayHandler = new Handler();
-        delayHandler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
-                StartSTT();
-            }
-        }, 8000);
     }
 
     private void VoiceStarting(final String in_voice) {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+
             @Override
             public void onInit(int status) {
-                if (status != ERROR) {
+                if(status==tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.speak(in_voice, TextToSpeech.QUEUE_FLUSH, null);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
+                    } else {
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, map);
+                    }
+
+                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
+                            Log.d("dddddddddd", "음성 실행 중");
+                        }
+
+                        @Override
+                        public void onDone(String utteranceId) {
+                            STTThread sttThread = new STTThread();
+                            sttThread.start();
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+                            Log.d("dddddddddd", "음성 에러");
+                        }
+                    });
                 }
             }
         });
     }
 
-    class STTThread2 extends Thread {
+    class STTThread extends Thread {
         @Override
         public void run() {
             Handler handler = new Handler(Looper.getMainLooper());
@@ -120,7 +137,7 @@ public class VoiceMenu extends AppCompatActivity {
                     img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                     StartSTT();
                 }
-            }, 5000);
+            },1000);
         }
     }
 
@@ -187,8 +204,6 @@ public class VoiceMenu extends AppCompatActivity {
             startActivity(intent);
         } else {//Not menu or order
             VoiceStarting("메뉴판 혹은 주문으로 다시 한번 말씀해 주세요");
-            STTThread2 sttThread2 = new STTThread2();
-            sttThread2.start();
         }
     }
 
@@ -197,13 +212,13 @@ public class VoiceMenu extends AppCompatActivity {
         super.onPause();
         tts.stop();
         tts.shutdown();
-        delayHandler.removeMessages(0);
+        //delayHandler.removeMessages(0);
     }
 
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.22.205:9000/menu";
+            String url = "http://192.168.10.106:9000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
