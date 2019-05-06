@@ -53,7 +53,7 @@ public class StartActivity extends AppCompatActivity {
 
         requestQueue= Volley.newRequestQueue(this);
 
-        RequestThread requestThread = new RequestThread(); ///////
+        RequestThread requestThread = new RequestThread();
         requestThread.start();
         if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -86,14 +86,13 @@ public class StartActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.10.106:9000/menu";
+            String url = "http://192.168.219.103:9000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
                     new Response.Listener<String>() { // String으로 응답을 받으면 실행(정상 실행)
                         @Override
                         public void onResponse(String response) {
-                            Log.d("ddddd", "응답");
                             processResponse(response);
                         }
                     },
@@ -110,7 +109,6 @@ public class StartActivity extends AppCompatActivity {
                     return params;
                 }
             };
-
             // 이전 결과가 있더라도 새로 요청해서 응답을 보여줌
             request.setShouldCache(false);
             requestQueue.add(request);
