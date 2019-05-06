@@ -32,9 +32,6 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     private String price;
     Intent intent;
     SpeechRecognizer mRecognizer;
-    public ArrayList<String> keywordArray;
-    private ArrayList<ArrayList<String>> mGroupList = null;
-    private ArrayList<String> mChildList = null;
     ImageView img_mic;
     ArrayList<String> matches;
     Handler delayHandler;
@@ -44,6 +41,8 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     private ArrayList<Menu> menuList;
     private Button button;
     ArrayList<Menu> items;
+    ArrayList<Menu> item1;
+    ArrayList<Menu> item2;
 
 
     @Override
@@ -54,10 +53,16 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         button = (Button) findViewById(R.id.button);
 
         Intent intent = getIntent();
-        items = intent.getParcelableArrayListExtra("menuToOrder");
+        item1 = intent.getParcelableArrayListExtra("menuToOrder");
 
         Intent intent2 = getIntent();
-        items = intent2.getParcelableArrayListExtra("spmenutoOreder");
+        item2 = intent2.getParcelableArrayListExtra("spmenutoOreder");
+
+        if (item1 != null){
+            items = item1;
+        }else {
+            items = item2;
+        }
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicesttorder);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
@@ -113,6 +118,41 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
                 }
             }
         });
+        /*
+        * tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status==tts.SUCCESS) {
+                    tts.setLanguage(Locale.KOREAN);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
+                    } else {
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, map);
+                    }
+
+                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
+                            Log.d("dddddddddd", "음성 실행 중");
+                        }
+
+                        @Override
+                        public void onDone(String utteranceId) {
+                            STTThread sttThread = new STTThread();
+                            sttThread.start();
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+                            Log.d("dddddddddd", "음성 에러");
+                        }
+                    });
+                }
+            }
+        });
+        * */
     }
 
     private void StartSTT() {

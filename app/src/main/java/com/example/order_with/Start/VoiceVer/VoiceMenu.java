@@ -49,7 +49,6 @@ public class VoiceMenu extends AppCompatActivity {
     SpeechRecognizer mRecognizer;
     ArrayList<String> matches;
     ImageView img_mic;
-    Handler delayHandler;
     ArrayList<Menu> items;
     RequestQueue requestQueue;
 
@@ -61,7 +60,7 @@ public class VoiceMenu extends AppCompatActivity {
 
         requestQueue= Volley.newRequestQueue(this);
 
-        RequestThread requestThread = new RequestThread(); ///////
+        RequestThread requestThread = new RequestThread();
         requestThread.start();
         if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -195,7 +194,6 @@ public class VoiceMenu extends AppCompatActivity {
     private void NextActivity(String input) {
         if (input.equals("메뉴") || input.equals("맨유") || input.equals("메뉴판")) {
             Intent intent = new Intent(this, VoiceSpeakingMenu.class);
-            Log.d("nextActivity", items.get(1).getTitle());
             intent.putExtra("servermenu",items); //
             startActivity(intent);
         } else if (input.equals("주문")) {
@@ -212,35 +210,30 @@ public class VoiceMenu extends AppCompatActivity {
         super.onPause();
         tts.stop();
         tts.shutdown();
-        //delayHandler.removeMessages(0);
     }
 
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.10.106:9000/menu";
+            String url = "http://192.168.219.103:9000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
                     new Response.Listener<String>() { // String으로 응답을 받으면 실행(정상 실행)
                         @Override
                         public void onResponse(String response) {
-                            //println(" 응답 : " + response);
-                            Log.d("ddddd", "응답");
                             processResponse(response);
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            //println(" 에러 : " + error.getMessage());
                         }
                     }
             ) {
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
-
                     return params;
                 }
             };
@@ -254,14 +247,11 @@ public class VoiceMenu extends AppCompatActivity {
     public void processResponse(String response) {
         Gson gson = new Gson();
         JsonParser parser = new JsonParser();
-
         JsonArray jsonArray = (JsonArray) parser.parse(response);
-        //println("메뉴 이름 반복문 : " + ((JsonObject) jsonArray.get(i)).get("name").getAsString());
         items = new ArrayList<Menu>();
         for (int i = 0; i < jsonArray.size(); i++) {//get item here
             items.add(new Menu(((JsonObject) jsonArray.get(i)).get("name").getAsString(),
                     ((JsonObject) jsonArray.get(i)).get("price").getAsString()));
         }
-        Log.d("ddddd", items.get(1).getTitle());
     }
 }

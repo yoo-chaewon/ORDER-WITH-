@@ -40,7 +40,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     ImageView img_mic;
     ArrayList<String> matches;
     private LinearLayoutManager selectLayoutManager;
-    Handler delayHandler;
     ArrayList<Menu> items;
     String menuVoice;
 
@@ -67,19 +66,14 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {//음성 중단//다시 듣고 싶으면 메뉴, 주문하시려면 주문을 말해주세요
-                Toast.makeText(getApplicationContext(), "화면 터치", Toast.LENGTH_SHORT).show();
                 tts.stop();
                 tts.shutdown();
-                //delayHandler.removeMessages(0);
 
                 Handler delayHandler = new Handler();
                 delayHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        // TODO
-                        VoiceStarting(";;; 주문하고자 하면 주문, 다시 들으려면 메뉴 말해주세요");
-                        //STTThread2 sttThread2 = new STTThread2();
-                        //sttThread2.start();
+                        VoiceStarting("주문하고자 하면 주문, 다시 들으려면 메뉴 말해주세요");
                     }
                 }, 1000);
             }
@@ -95,7 +89,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private String MakingVoiceMenu() {
         menuVoice = " ";
         for (int i = 0; i < items.size(); i++) {
-            menuVoice += items.get(i).getTitle() + " ;;; ";
+            menuVoice += items.get(i).getTitle() + " ,  ";
         }
         String resultVoice = addVoice1 + menuVoice + addVoice2;
         return resultVoice;
@@ -103,7 +97,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
     private void VoiceStarting(final String mvoice) {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-
             @Override
             public void onInit(int status) {
                 if(status==tts.SUCCESS) {
@@ -224,6 +217,5 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         super.onPause();
         tts.stop();
         tts.shutdown();
-        //delayHandler.removeMessages(0);
     }
 }
