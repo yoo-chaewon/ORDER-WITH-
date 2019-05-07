@@ -20,6 +20,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.order_with.R;
+import com.example.order_with.ReciptActivity;
+import com.example.order_with.Start.NonVoiceVer.NVoiceMenu;
+import com.example.order_with.Start.StartActivity;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
 
@@ -98,10 +101,10 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     @Override
     protected void onResume() {
         super.onResume();
-        VoiceStarting();
+        VoiceStarting(startVoice);
     }
 
-    private void VoiceStarting() {
+    private void VoiceStarting(final String startVoice) {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -189,8 +192,8 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         @Override
         public void onResults(Bundle results) {
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            Toast.makeText(getApplicationContext(), matches.get(0), Toast.LENGTH_SHORT).show();
             VoiceMatch(matches.get(0));
+            VoiceStarting("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요");
         }
 
         @Override
@@ -203,11 +206,17 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     };
 
     public void VoiceMatch(String match) {
-        for (int i = 0; i < items.size(); i++) {
-            if (match.equals(items.get(i).getTitle())) {
-                Menu voiceSelect = new Menu(items.get(i).getTitle(), items.get(i).getPrice());
-                menuList.add(voiceSelect);
-                mAdapter.notifyDataSetChanged();
+        if(match.equals("결제")){
+            Intent intent = new Intent(VoiceSTTOrder.this, VoiceOrderFinal.class);
+            intent.putExtra("clickedItem", menuList);
+            startActivity(intent);
+        }else {
+            for (int i = 0; i < items.size(); i++) {
+                if (match.equals(items.get(i).getTitle())) {
+                    Menu voiceSelect = new Menu(items.get(i).getTitle(), items.get(i).getPrice());
+                    menuList.add(voiceSelect);
+                    mAdapter.notifyDataSetChanged();
+                }
             }
         }
     }
@@ -226,6 +235,6 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         super.onPause();
         tts.stop();
         tts.shutdown();
-        delayHandler.removeMessages(0);
+        //delayHandler.removeMessages(0);
     }
 }

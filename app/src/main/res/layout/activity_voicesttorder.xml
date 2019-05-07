@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/green"
         android:padding="15dp"
-        android:text="주 문"
+        android:text="결 제"
         android:textColor="@color/white"
         android:textSize="30sp"
         android:textStyle="bold"
