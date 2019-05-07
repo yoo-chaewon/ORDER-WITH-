@@ -91,7 +91,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(VoiceSTTOrder.this, VoiceOrderFinal.class);
+                Intent intent = new Intent(VoiceSTTOrder.this, ReciptActivity.class);
                 intent.putExtra("clickedItem", menuList);
                 startActivity(intent);
             }
@@ -207,7 +207,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
 
     public void VoiceMatch(String match) {
         if(match.equals("결제")){
-            Intent intent = new Intent(VoiceSTTOrder.this, VoiceOrderFinal.class);
+            Intent intent = new Intent(VoiceSTTOrder.this, ReciptActivity.class);
             intent.putExtra("clickedItem", menuList);
             startActivity(intent);
         }else {

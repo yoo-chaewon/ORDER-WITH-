@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.order_with.R;
+import com.example.order_with.ReciptActivity;
 import com.example.order_with.Start.VoiceVer.VoiceSpeakingMenu;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
@@ -60,7 +61,7 @@ public class NVoiceMenu extends AppCompatActivity implements MenuAdapter.MyClick
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(NVoiceMenu.this, NVoiceOrderFinal.class);
+                Intent intent = new Intent(NVoiceMenu.this, ReciptActivity.class);
                 intent.putExtra("clickedItem",menuList);
                 startActivity(intent);
             }
