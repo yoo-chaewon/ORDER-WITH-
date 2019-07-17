@@ -79,6 +79,5 @@ public class NVoiceMenu extends AppCompatActivity implements MenuAdapter.MyClick
         mAdapter.notifyDataSetChanged();
 
     }
-
 }
 

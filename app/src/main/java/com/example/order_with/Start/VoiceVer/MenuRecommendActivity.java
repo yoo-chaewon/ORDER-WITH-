@@ -1,22 +1,23 @@
 package com.example.order_with.Start.VoiceVer;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
-import android.provider.ContactsContract;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,72 +30,98 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.order_with.R;
+import com.example.order_with.menuItem.Index;
 import com.example.order_with.menuItem.Menu;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static android.speech.tts.TextToSpeech.ERROR;
-
-public class VoiceMenu extends AppCompatActivity {
+public class MenuRecommendActivity extends AppCompatActivity {
     private TextToSpeech tts;
-    String startVoice = "음성 인식 모드 입니다. 메뉴를 듣고 싶으면 메뉴판, 주문하고자 하시면 주문을 말해 주세요";
-    Intent intent;
+    RequestQueue requestQueue;
+    final int PERMISSION = 1;
+    ImageView iv_recommend;
+    ArrayList<Index> items;
+    ArrayList<Menu> menus;
+    String input_menu;
+    String result = " ";
+    TextView tv_recommend;
     SpeechRecognizer mRecognizer;
     ArrayList<String> matches;
-    ImageView img_mic;
-    ArrayList<Menu> items;
-    RequestQueue requestQueue;
+    Intent intent;
+    String voice1 = "라는 메뉴는 존재하지 않습니다.";
+    String voice2 = "와 유사한 추천 메뉴를 받고 싶으면, 예 그렇지 않으면 아니오.로 답하세요.";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_voicemenu);
-        img_mic = (ImageView) findViewById(R.id.img_mic_voicemenu);
+        setContentView(R.layout.activity_menu_recommend);
 
-        requestQueue= Volley.newRequestQueue(this);
+        iv_recommend = (ImageView)findViewById(R.id.iv_recommend);
 
+        menus = new ArrayList<>();
+        Intent getintent = getIntent();
+        menus = getintent.getParcelableArrayListExtra("menu_fromSTT");
+        input_menu = getintent.getStringExtra("menu_name");
+
+        requestQueue = Volley.newRequestQueue(this);
         RequestThread requestThread = new RequestThread();
         requestThread.start();
         if (requestQueue == null) {
             requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
 
-        Button btn_menu = (Button) findViewById(R.id.go_menu);
-        btn_menu.setOnClickListener(new View.OnClickListener() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
+                    Manifest.permission.RECORD_AUDIO}, PERMISSION);
+        }
+        tv_recommend = (TextView) findViewById(R.id.tv_recommend);
+        Button button = (Button)findViewById(R.id.btn_recommend);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NextActivity("메뉴");
+                int[] count_arr = new int[menus.size()+1];
+                int[][] index = new int[items.size()][menus.size() *2];
+
+                for(int i = 0; i < input_menu.length(); i++){
+                    char temp = input_menu.charAt(i);
+                    for(int j = 0; j < items.size(); j++){
+                        if(items.get(j).getWord() == temp){
+                            String[] split = items.get(j).getList().split("/");
+                            for(int k = 0; k < split.length; k++){
+                                count_arr[Integer.parseInt(split[k])]++;
+                            }
+                        }
+                    }
+                }
+
+                int max = -1;
+                for (int i = 0; i < menus.size()+1; i++) {
+                    max = Math.max(max, count_arr[i]);
+                }
+                String result = " ";
+                for (int i = 0; i < menus.size()+1; i++) {
+                    if (count_arr[i] == max) {
+                        result = result + menus.get(i).getTitle() + "\n";
+                    }
+                }
+                tv_recommend.setText(result);
             }
         });
-        Button btn_order = (Button) findViewById(R.id.go_order);
-        btn_order.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NextActivity("주문");
-            }
-        });
-
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        VoiceStarting(startVoice);
-    }
-
-    private void VoiceStarting(final String in_voice) {
+    private void VoiceStarting(final String startVoice) {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-
             @Override
             public void onInit(int status) {
-                if(status==tts.SUCCESS) {
+                if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
@@ -107,7 +134,6 @@ public class VoiceMenu extends AppCompatActivity {
                     tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
                         public void onStart(String utteranceId) {
-                            Log.d("dddddddddd", "음성 실행 중");
                         }
 
                         @Override
@@ -118,12 +144,12 @@ public class VoiceMenu extends AppCompatActivity {
 
                         @Override
                         public void onError(String utteranceId) {
-                            Log.d("dddddddddd", "음성 에러");
                         }
                     });
                 }
             }
         });
+
     }
 
     class STTThread extends Thread {
@@ -133,7 +159,7 @@ public class VoiceMenu extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+                    iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                     StartSTT();
                 }
             },1000);
@@ -167,19 +193,20 @@ public class VoiceMenu extends AppCompatActivity {
 
         @Override
         public void onEndOfSpeech() {
-            img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
+            iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
         }
 
         @Override
         public void onError(int error) {
+            iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
             Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
-            img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
         }
 
         @Override
         public void onResults(Bundle results) {
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            NextActivity(matches.get(0));
+            //VoiceMatch(matches.get(0));
+            VoiceStarting("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요");
         }
 
         @Override
@@ -191,31 +218,11 @@ public class VoiceMenu extends AppCompatActivity {
         }
     };
 
-    private void NextActivity(String input) {
-        if (input.equals("메뉴") || input.equals("맨유") || input.equals("메뉴판")) {
-            Intent intent = new Intent(this, VoiceSpeakingMenu.class);
-            intent.putExtra("servermenu",items); //
-            startActivity(intent);
-        } else if (input.equals("주문")) {
-            Intent intent = new Intent(this, VoiceSTTOrder.class);
-            intent.putExtra("menuToOrder",items);
-            startActivity(intent);
-        } else {//Not menu or order
-            VoiceStarting("메뉴판 혹은 주문으로 다시 한번 말씀해 주세요");
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        tts.stop();
-        tts.shutdown();
-    }
 
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.0.5:9000/menu";
+            String url = "http://192.168.0.5:9000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
@@ -234,10 +241,10 @@ public class VoiceMenu extends AppCompatActivity {
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<String, String>();
+
                     return params;
                 }
             };
-
             // 이전 결과가 있더라도 새로 요청해서 응답을 보여줌
             request.setShouldCache(false);
             requestQueue.add(request);
@@ -247,11 +254,15 @@ public class VoiceMenu extends AppCompatActivity {
     public void processResponse(String response) {
         Gson gson = new Gson();
         JsonParser parser = new JsonParser();
+
         JsonArray jsonArray = (JsonArray) parser.parse(response);
-        items = new ArrayList<Menu>();
+        items = new ArrayList<Index>();
         for (int i = 0; i < jsonArray.size(); i++) {//get item here
-            items.add(new Menu(((JsonObject) jsonArray.get(i)).get("name").getAsString(),
-                    ((JsonObject) jsonArray.get(i)).get("price").getAsString()));
+            items.add(new Index(((JsonObject) jsonArray.get(i)).get("word").getAsCharacter(),
+                    ((JsonObject) jsonArray.get(i)).get("count").getAsInt(),
+                    ((JsonObject) jsonArray.get(i)).get("list").getAsString()));
+
         }
+        Log.d("XXXXXX", items.get(1).getList());
     }
 }

@@ -42,7 +42,6 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     SpeechRecognizer mRecognizer;
     ImageView img_mic;
     ArrayList<String> matches;
-    Handler delayHandler;
     private MenuAdapter mAdapter;
     private RecyclerView ListrecyclerView;
     private LinearLayoutManager selectLayoutManager;
@@ -206,17 +205,25 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     };
 
     public void VoiceMatch(String match) {
+        int i;
         if(match.equals("결제")){
             Intent intent = new Intent(VoiceSTTOrder.this, ReciptActivity.class);
             intent.putExtra("clickedItem", menuList);
             startActivity(intent);
         }else {
-            for (int i = 0; i < items.size(); i++) {
+            for (i = 0; i < items.size(); i++) {
                 if (match.equals(items.get(i).getTitle())) {
                     Menu voiceSelect = new Menu(items.get(i).getTitle(), items.get(i).getPrice());
                     menuList.add(voiceSelect);
                     mAdapter.notifyDataSetChanged();
+                    break;
                 }
+            }
+            if(i == items.size()) {
+                Intent intent2 = new Intent(this, MenuRecommendActivity.class);
+                intent2.putExtra("menu_name", match);
+                intent2.putExtra("menu_fromSTT", items);
+                startActivity(intent2);
             }
         }
     }
