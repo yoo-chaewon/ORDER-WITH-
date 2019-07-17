@@ -51,12 +51,11 @@ public class MenuRecommendActivity extends AppCompatActivity {
     ArrayList<Index> items;
     ArrayList<Menu> menus;
     String input_menu;
-    String result = " ";
     TextView tv_recommend;
     SpeechRecognizer mRecognizer;
     ArrayList<String> matches;
     Intent intent;
-    String voice1 = "라는 메뉴는 존재하지 않습니다.";
+    String voice1 = "이라는 메뉴는 존재하지 않습니다.";
     String voice2 = "와 유사한 추천 메뉴를 받고 싶으면, 예 그렇지 않으면 아니오.로 답하세요.";
 
     @Override
@@ -64,7 +63,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_recommend);
 
-        iv_recommend = (ImageView)findViewById(R.id.iv_recommend);
+        iv_recommend = (ImageView) findViewById(R.id.iv_recommend);
 
         menus = new ArrayList<>();
         Intent getintent = getIntent();
@@ -83,38 +82,9 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     Manifest.permission.RECORD_AUDIO}, PERMISSION);
         }
         tv_recommend = (TextView) findViewById(R.id.tv_recommend);
-        Button button = (Button)findViewById(R.id.btn_recommend);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int[] count_arr = new int[menus.size()+1];
-                int[][] index = new int[items.size()][menus.size() *2];
 
-                for(int i = 0; i < input_menu.length(); i++){
-                    char temp = input_menu.charAt(i);
-                    for(int j = 0; j < items.size(); j++){
-                        if(items.get(j).getWord() == temp){
-                            String[] split = items.get(j).getList().split("/");
-                            for(int k = 0; k < split.length; k++){
-                                count_arr[Integer.parseInt(split[k])]++;
-                            }
-                        }
-                    }
-                }
-
-                int max = -1;
-                for (int i = 0; i < menus.size()+1; i++) {
-                    max = Math.max(max, count_arr[i]);
-                }
-                String result = " ";
-                for (int i = 0; i < menus.size()+1; i++) {
-                    if (count_arr[i] == max) {
-                        result = result + menus.get(i).getTitle() + "\n";
-                    }
-                }
-                tv_recommend.setText(result);
-            }
-        });
+        voice1 = input_menu + voice1 + input_menu + voice2;
+        VoiceStarting(voice1);
     }
 
     private void VoiceStarting(final String startVoice) {
@@ -162,7 +132,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                     StartSTT();
                 }
-            },1000);
+            }, 1000);
         }
     }
 
@@ -205,8 +175,41 @@ public class MenuRecommendActivity extends AppCompatActivity {
         @Override
         public void onResults(Bundle results) {
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            //VoiceMatch(matches.get(0));
-            VoiceStarting("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요");
+            if (matches.get(0).equals("예") || matches.get(0).equals("네")) {
+                int[] count_arr = new int[menus.size() + 1];
+
+                for (int i = 0; i < input_menu.length(); i++) {
+                    char temp = input_menu.charAt(i);
+                    for (int j = 0; j < items.size(); j++) {
+                        if (items.get(j).getWord() == temp) {
+                            String[] split = items.get(j).getList().split("/");
+                            for (int k = 0; k < split.length; k++) {
+                                count_arr[Integer.parseInt(split[k])]++;
+                            }
+                        }
+                    }
+                }
+
+                int max = -1;
+                for (int i = 0; i < menus.size() + 1; i++) {
+                    max = Math.max(max, count_arr[i]);
+                }
+                String result = "";
+                for (int i = 0; i < menus.size() + 1; i++) {
+                    if (count_arr[i] == max) {
+                        result = result + menus.get(i).getTitle() + "\n";
+                    }
+                }
+                tv_recommend.setText(result);
+                result = "추천 메뉴로는" + result + "가 있습니다. ";
+                VoiceStarting(result);
+                //TODO 현재 string으로 result받는 것을 배열로 받아 새로 주문한 것과 일치 되는 것을 이전 activity 보내서 추가시키기
+
+            } else if (matches.get(0).equals("아니요") || matches.get(0).equals("아니오")) {
+                finish();
+            } else {
+                //TODO 처음부터 다시 실행
+            }
         }
 
         @Override
@@ -217,6 +220,34 @@ public class MenuRecommendActivity extends AppCompatActivity {
         public void onEvent(int eventType, Bundle params) {
         }
     };
+
+    public void indexing(){
+        int[] count_arr = new int[menus.size() + 1];
+
+        for (int i = 0; i < input_menu.length(); i++) {
+            char temp = input_menu.charAt(i);
+            for (int j = 0; j < items.size(); j++) {
+                if (items.get(j).getWord() == temp) {
+                    String[] split = items.get(j).getList().split("/");
+                    for (int k = 0; k < split.length; k++) {
+                        count_arr[Integer.parseInt(split[k])]++;
+                    }
+                }
+            }
+        }
+
+        int max = -1;
+        for (int i = 0; i < menus.size() + 1; i++) {
+            max = Math.max(max, count_arr[i]);
+        }
+        String result = " ";
+        for (int i = 0; i < menus.size() + 1; i++) {
+            if (count_arr[i] == max) {
+                result = result + menus.get(i).getTitle() + "\n";
+            }
+        }
+
+    }
 
 
     class RequestThread extends Thread {
@@ -245,14 +276,12 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     return params;
                 }
             };
-            // 이전 결과가 있더라도 새로 요청해서 응답을 보여줌
             request.setShouldCache(false);
             requestQueue.add(request);
         }
     }
 
     public void processResponse(String response) {
-        Gson gson = new Gson();
         JsonParser parser = new JsonParser();
 
         JsonArray jsonArray = (JsonArray) parser.parse(response);
@@ -263,6 +292,5 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     ((JsonObject) jsonArray.get(i)).get("list").getAsString()));
 
         }
-        Log.d("XXXXXX", items.get(1).getList());
     }
 }
