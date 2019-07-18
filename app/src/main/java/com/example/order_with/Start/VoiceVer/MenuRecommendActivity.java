@@ -50,12 +50,13 @@ public class MenuRecommendActivity extends AppCompatActivity {
     ImageView iv_recommend;
     ArrayList<Index> items;
     ArrayList<Menu> menus;
+    ArrayList<Menu> recommend;
     String input_menu;
     TextView tv_recommend;
     SpeechRecognizer mRecognizer;
     ArrayList<String> matches;
     Intent intent;
-    String voice1 = "이라는 메뉴는 존재하지 않습니다.";
+    String voice1 = "라는 메뉴는 존재하지 않습니다.";
     String voice2 = "와 유사한 추천 메뉴를 받고 싶으면, 예 그렇지 않으면 아니오.로 답하세요.";
 
     @Override
@@ -65,6 +66,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
         iv_recommend = (ImageView) findViewById(R.id.iv_recommend);
 
+        recommend = new ArrayList<>();
         menus = new ArrayList<>();
         Intent getintent = getIntent();
         menus = getintent.getParcelableArrayListExtra("menu_fromSTT");
@@ -197,18 +199,26 @@ public class MenuRecommendActivity extends AppCompatActivity {
                 String result = "";
                 for (int i = 0; i < menus.size() + 1; i++) {
                     if (count_arr[i] == max) {
+                        recommend.add(menus.get(i));
                         result = result + menus.get(i).getTitle() + "\n";
                     }
                 }
                 tv_recommend.setText(result);
-                result = "추천 메뉴로는" + result + "가 있습니다. ";
+                result = "추천 메뉴로는" + result + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
                 VoiceStarting(result);
-                //TODO 현재 string으로 result받는 것을 배열로 받아 새로 주문한 것과 일치 되는 것을 이전 activity 보내서 추가시키기
 
             } else if (matches.get(0).equals("아니요") || matches.get(0).equals("아니오")) {
                 finish();
-            } else {
-                //TODO 처음부터 다시 실행
+            } else{
+                for (int i = 0; i < recommend.size(); i++) {
+                    if (matches.get(0).equals(recommend.get(i).getTitle())) {
+                        Log.d("kkkkk",matches.get(0));
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("recommend",recommend.get(i).getTitle());
+                        setResult(RESULT_OK,resultIntent);
+                        finish();
+                    }
+                }
             }
         }
 
@@ -253,7 +263,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.0.5:9000/index";
+            String url = "http://192.168.0.9:9000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,

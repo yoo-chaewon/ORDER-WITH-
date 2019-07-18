@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -223,7 +224,27 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
                 Intent intent2 = new Intent(this, MenuRecommendActivity.class);
                 intent2.putExtra("menu_name", match);
                 intent2.putExtra("menu_fromSTT", items);
-                startActivity(intent2);
+                startActivityForResult(intent2, 3000);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK){
+            switch (requestCode){
+                case 3000: {
+                    String recommend = data.getStringExtra("recommend");
+                    Log.d("fffff22", recommend);
+                    for (int i = 0; i < items.size(); i++) {
+                        if (recommend.equals(items.get(i).getTitle())) {
+                            Log.d("fffff33", items.get(i).getTitle());
+                            menuList.add(items.get(i));
+                            mAdapter.notifyDataSetChanged();
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
