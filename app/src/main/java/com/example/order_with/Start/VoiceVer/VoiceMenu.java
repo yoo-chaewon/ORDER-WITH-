@@ -30,7 +30,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.order_with.R;
 import com.example.order_with.menuItem.Menu;
-import com.example.order_with.menuItem.indexMenu;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -216,7 +215,7 @@ public class VoiceMenu extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.10.109:9000/menu";
+            String url = "http://192.168.27.34:9000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
@@ -253,9 +252,6 @@ public class VoiceMenu extends AppCompatActivity {
         for (int i = 0; i < jsonArray.size(); i++) {//get item here
             items.add(new Menu(((JsonObject) jsonArray.get(i)).get("name").getAsString(),
                     ((JsonObject) jsonArray.get(i)).get("price").getAsString()));
-
-            Log.d("voiceeeeeeeee", items.get(i).getTitle());
         }
     }
-
 }
