@@ -15,24 +15,17 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.order_with.R;
-import com.example.order_with.Start.StartActivity;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
-import com.example.order_with.menuItem.indexMenu;
-import com.example.order_with.menuItem.serverMenu;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
-
-import static android.speech.tts.TextToSpeech.ERROR;
 
 public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.MyClickListener {
     private TextToSpeech tts;
@@ -45,9 +38,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private LinearLayoutManager selectLayoutManager;
     ArrayList<Menu> items;
     String menuVoice;
-    ArrayList<serverMenu> servermenu;
-    ArrayList<indexMenu> indexmenu;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +74,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                 }, 1000);
             }
         });
-
     }
 
     @Override
@@ -119,7 +108,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                     tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
                         public void onStart(String utteranceId) {
-                            Log.d("dddddddddd", "음성 실행 중");
                         }
 
                         @Override
@@ -130,7 +118,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
                         @Override
                         public void onError(String utteranceId) {
-                            Log.d("dddddddddd", "음성 에러");
                         }
                     });
                 }
@@ -191,43 +178,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         @Override
         public void onResults(Bundle results) {
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
-            String input_menu = matches.get(0);
-            NextActivity(input_menu);
-
-            Log.d("input_menu", input_menu);
-         /*   servermenu = new ArrayList<>();
-
-            int[] count_arr = new int[servermenu.size() + 1];
-            int[][] index = new int[55205][items.size() *2];
-
-            for (int i = 0; i < input_menu.length(); i++) {
-                char temp = input_menu.charAt(i);
-                if (index[(int) temp][0] != 0) {
-                    for (int j = 1; j < index[(int) temp][0] + 1; j++) {//
-                        int menu_num = index[(int) temp][j];
-                        count_arr[menu_num]++;
-                    }
-                }
-            }
-
-            int max = 0;
-            for (int i = 0; i < servermenu.size(); i++) {
-                System.out.println(servermenu.get(i).getTitle() + "(" + i + ")" + ":" + count_arr[i]);
-                if (count_arr[i] > max) {
-                    max = count_arr[i];
-                }
-            }
-
-            //System.out.print("max 값: " + max);
-
-            for (int i = 0; i < servermenu.size(); i++) {
-                if (count_arr[i] == max) {
-                    // System.out.println(servermenu.get(i).getTitle());
-                    Log.d("ranking", servermenu.get(i).getTitle());
-                }
-            } */
-
+            NextActivity(matches.get(0));
         }
 
         @Override
@@ -244,7 +195,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     }
 
     private void NextActivity(String input) {
-        if(input.equals("메뉴") || input.equals("메뉴판") || input.equals("맨유")) {//replay menu
+        if (input.equals("메뉴") || input.equals("메뉴판") || input.equals("맨유")) {//replay menu
             VoiceStarting(addVoice1 + menuVoice + addVoice2);
         } else if (input.equals("주문")) {// go order page
             Intent intent = new Intent(this, VoiceSTTOrder.class);
