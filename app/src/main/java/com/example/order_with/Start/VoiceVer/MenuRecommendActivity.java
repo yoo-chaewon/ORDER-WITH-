@@ -231,39 +231,10 @@ public class MenuRecommendActivity extends AppCompatActivity {
         }
     };
 
-    public void indexing(){
-        int[] count_arr = new int[menus.size() + 1];
-
-        for (int i = 0; i < input_menu.length(); i++) {
-            char temp = input_menu.charAt(i);
-            for (int j = 0; j < items.size(); j++) {
-                if (items.get(j).getWord() == temp) {
-                    String[] split = items.get(j).getList().split("/");
-                    for (int k = 0; k < split.length; k++) {
-                        count_arr[Integer.parseInt(split[k])]++;
-                    }
-                }
-            }
-        }
-
-        int max = -1;
-        for (int i = 0; i < menus.size() + 1; i++) {
-            max = Math.max(max, count_arr[i]);
-        }
-        String result = " ";
-        for (int i = 0; i < menus.size() + 1; i++) {
-            if (count_arr[i] == max) {
-                result = result + menus.get(i).getTitle() + "\n";
-            }
-        }
-
-    }
-
-
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.0.9:9000/index";
+            String url = "http://10.10.3.44:9000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
