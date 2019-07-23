@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.order_with">
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -11,23 +12,22 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".Start.VoiceVer.MenuRecommendActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".Start.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Start.NonVoiceVer.NVoiceMenu"/>
-        <activity android:name=".Start.NonVoiceVer.NVoiceOrderFinal"/>
-        <activity android:name=".Start.VoiceVer.VoiceMenu">
-        </activity>
-        <activity android:name=".Start.VoiceVer.VoiceSpeakingMenu">
-        </activity>
-        <activity android:name=".Start.VoiceVer.VoiceSTTOrder">
-        </activity>
-        <activity android:name=".Start.VoiceVer.VoiceOrderFinal"/>
-        <activity android:name=".ReciptActivity"/>
+        <activity android:name=".Start.NonVoiceVer.NVoiceMenu" />
+        <activity android:name=".Start.NonVoiceVer.NVoiceOrderFinal" />
+        <activity android:name=".Start.VoiceVer.VoiceMenu"></activity>
+        <activity android:name=".Start.VoiceVer.VoiceSpeakingMenu"></activity>
+        <activity android:name=".Start.VoiceVer.VoiceSTTOrder"></activity>
+        <activity android:name=".Start.VoiceVer.VoiceOrderFinal" />
+        <activity android:name=".ReciptActivity" />
 
         <receiver android:name=".Start.VoiceVer.HeadsetReceiver">
             <intent-filter>
@@ -35,4 +35,5 @@
             </intent-filter>
         </receiver>
     </application>
+
 </manifest>

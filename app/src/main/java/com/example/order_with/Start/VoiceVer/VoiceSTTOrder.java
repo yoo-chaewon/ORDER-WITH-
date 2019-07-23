@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -42,7 +43,6 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     SpeechRecognizer mRecognizer;
     ImageView img_mic;
     ArrayList<String> matches;
-    Handler delayHandler;
     private MenuAdapter mAdapter;
     private RecyclerView ListrecyclerView;
     private LinearLayoutManager selectLayoutManager;
@@ -206,16 +206,44 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     };
 
     public void VoiceMatch(String match) {
+        int i;
         if(match.equals("결제")){
             Intent intent = new Intent(VoiceSTTOrder.this, ReciptActivity.class);
             intent.putExtra("clickedItem", menuList);
             startActivity(intent);
         }else {
-            for (int i = 0; i < items.size(); i++) {
+            for (i = 0; i < items.size(); i++) {
                 if (match.equals(items.get(i).getTitle())) {
                     Menu voiceSelect = new Menu(items.get(i).getTitle(), items.get(i).getPrice());
                     menuList.add(voiceSelect);
                     mAdapter.notifyDataSetChanged();
+                    break;
+                }
+            }
+            if(i == items.size()) {
+                Intent intent2 = new Intent(this, MenuRecommendActivity.class);
+                intent2.putExtra("menu_name", match);
+                intent2.putExtra("menu_fromSTT", items);
+                startActivityForResult(intent2, 3000);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK){
+            switch (requestCode){
+                case 3000: {
+                    String recommend = data.getStringExtra("recommend");
+                    Log.d("fffff22", recommend);
+                    for (int i = 0; i < items.size(); i++) {
+                        if (recommend.equals(items.get(i).getTitle())) {
+                            Log.d("fffff33", items.get(i).getTitle());
+                            menuList.add(items.get(i));
+                            mAdapter.notifyDataSetChanged();
+                            break;
+                        }
+                    }
                 }
             }
         }
