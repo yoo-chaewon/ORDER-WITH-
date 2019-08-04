@@ -58,6 +58,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
     Intent intent;
     String voice1 = "라는 메뉴는 존재하지 않습니다.";
     String voice2 = "와 유사한 추천 메뉴를 받고 싶으면, 예 그렇지 않으면 아니오.로 답하세요.";
+    int flag = 0;
+    String result = " ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,15 +173,22 @@ public class MenuRecommendActivity extends AppCompatActivity {
         @Override
         public void onError(int error) {
             iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
-            Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
+            switch (error) {
+                case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                    if(flag == 0){
+                        VoiceStarting(voice1);
+                    }else {
+                        VoiceStarting(result);
+                    }
+                    break;
+            }
         }
-
         @Override
         public void onResults(Bundle results) {
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             if (matches.get(0).equals("예") || matches.get(0).equals("네")) {
+                flag = 1;
                 int[] count_arr = new int[menus.size() + 1];
-
                 for (int i = 0; i < input_menu.length(); i++) {
                     char temp = input_menu.charAt(i);
                     for (int j = 0; j < items.size(); j++) {
@@ -196,7 +205,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
                 for (int i = 0; i < menus.size() + 1; i++) {
                     max = Math.max(max, count_arr[i]);
                 }
-                String result = "";
+                result = "";
                 for (int i = 0; i < menus.size() + 1; i++) {
                     if (count_arr[i] == max) {
                         recommend.add(menus.get(i));
@@ -233,7 +242,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://172.20.10.6:9000/index";
+            String url = "http://192.168.219.107:9000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,

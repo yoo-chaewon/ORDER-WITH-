@@ -181,7 +181,11 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         @Override
         public void onError(int error) {
             img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
-            Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
+            switch (error) {
+                case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                    VoiceStarting(startVoice);
+                    break;
+            }
         }
 
         @Override
