@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
     private TextToSpeech tts;
     String addVoice1 = "메뉴안내를 시작하겠습니다. 메뉴 듣기를 중단하고 싶으면 화면 아무곳을 터치해 주세요. 메뉴에는";
     String addVoice2 = "가 있습니다. 다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요";
+    String voice3 = "다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요";
     Intent intent;
     SpeechRecognizer mRecognizer;
     ImageView img_mic;
@@ -172,7 +174,11 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         @Override
         public void onError(int error) {
             img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
-            Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
+            switch (error) {
+                case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                    VoiceStarting(voice3);
+                    break;
+            }
         }
 
         @Override

@@ -101,7 +101,6 @@ public class VoiceMenu extends AppCompatActivity {
                     tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
                         public void onStart(String utteranceId) {
-                            Log.d("dddddddddd", "음성 실행 중");
                         }
 
                         @Override
@@ -112,7 +111,6 @@ public class VoiceMenu extends AppCompatActivity {
 
                         @Override
                         public void onError(String utteranceId) {
-                            Log.d("dddddddddd", "음성 에러");
                         }
                     });
                 }
@@ -166,8 +164,13 @@ public class VoiceMenu extends AppCompatActivity {
 
         @Override
         public void onError(int error) {
-            Toast.makeText(getApplicationContext(), "에러 발생", Toast.LENGTH_SHORT).show();
             img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
+
+            switch (error) {
+                case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                    VoiceStarting(startVoice);
+                    break;
+            }
         }
 
         @Override
@@ -183,6 +186,7 @@ public class VoiceMenu extends AppCompatActivity {
         @Override
         public void onEvent(int eventType, Bundle params) {
         }
+
     };
 
     private void NextActivity(String input) {
@@ -209,7 +213,7 @@ public class VoiceMenu extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://172.20.10.6:9000/menu";
+            String url = "http://192.168.219.107:9000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
