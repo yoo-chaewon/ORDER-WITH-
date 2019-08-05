@@ -46,6 +46,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     ArrayList<Menu> items;
     ArrayList<Menu> item1;
     ArrayList<Menu> item2;
+    int flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +97,9 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
     @Override
     protected void onResume() {
         super.onResume();
-        VoiceStarting(startVoice);
+        if (flag == 0) {
+            VoiceStarting(startVoice);
+        }
     }
 
     private void VoiceStarting(final String startVoice) {
@@ -233,6 +236,8 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
         if(resultCode == RESULT_OK){
             switch (requestCode){
                 case 3000: {
+                    flag = 1;
+                    VoiceStarting("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요");
                     String recommend = data.getStringExtra("recommend");
                     for (int i = 0; i < items.size(); i++) {
                         if (recommend.equals(items.get(i).getTitle())) {

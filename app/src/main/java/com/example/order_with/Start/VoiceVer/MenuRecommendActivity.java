@@ -60,6 +60,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     String voice2 = "와 유사한 추천 메뉴를 받고 싶으면, 예 그렇지 않으면 아니오.로 답하세요.";
     int flag = 0;
     String result = " ";
+    String voice3 = "추천 메뉴가 없습니다.";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +113,49 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
                         @Override
                         public void onDone(String utteranceId) {
-                            STTThread sttThread = new STTThread();
-                            sttThread.start();
+                            if(startVoice == voice3) {
+                                finish();
+                            }
+
+                            else {
+                                STTThread sttThread = new STTThread();
+                                sttThread.start();
+                            }
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+
+    private void VoiceStarting2(final String startVoice) {
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == tts.SUCCESS) {
+                    tts.setLanguage(Locale.KOREAN);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
+                    } else {
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, map);
+                    }
+
+                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
+                        }
+
+                        @Override
+                        public void onDone(String utteranceId) {
+                            STTThread2 sttThread2 = new STTThread2();
+                            sttThread2.start();
                         }
 
                         @Override
@@ -140,11 +182,33 @@ public class MenuRecommendActivity extends AppCompatActivity {
         }
     }
 
+    class STTThread2 extends Thread {
+        @Override
+        public void run() {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+                    StartSTT2();
+                }
+            }, 1000);
+        }
+    }
+
     private void StartSTT() {
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
         mRecognizer = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
         mRecognizer.setRecognitionListener(listener);
+        mRecognizer.startListening(intent);
+    }
+
+    private void StartSTT2() {
+        intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+        mRecognizer = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
+        mRecognizer.setRecognitionListener(listener2);
         mRecognizer.startListening(intent);
     }
 
@@ -185,6 +249,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
         }
         @Override
         public void onResults(Bundle results) {
+            int count = 0;
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             if (matches.get(0).equals("예") || matches.get(0).equals("네")) {
                 flag = 1;
@@ -193,40 +258,118 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     char temp = input_menu.charAt(i);
                     for (int j = 0; j < items.size(); j++) {
                         if (items.get(j).getWord() == temp) {
+                            count = 1;
                             String[] split = items.get(j).getList().split("/");
                             for (int k = 0; k < split.length; k++) {
                                 count_arr[Integer.parseInt(split[k])]++;
                             }
                         }
+
+                        else {
+                            // 추천 메뉴 없을 경우 추가
+                            Log.d("match2222", "else 실행");
+                            VoiceStarting(voice3);
+
+                        }
                     }
                 }
 
-                int max = -1;
-                for (int i = 0; i < menus.size() + 1; i++) {
-                    max = Math.max(max, count_arr[i]);
-                }
-                result = "";
-                for (int i = 0; i < menus.size() + 1; i++) {
-                    if (count_arr[i] == max) {
-                        recommend.add(menus.get(i));
-                        result = result + menus.get(i).getTitle() + "\n";
+                if (count == 1) {
+                    int max = -1;
+                    for (int i = 0; i < menus.size() + 1; i++) {
+                        max = Math.max(max, count_arr[i]);
                     }
-                }
-                tv_recommend.setText(result);
-                result = "추천 메뉴로는" + result + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
-                VoiceStarting(result);
+                    result = "";
+                    for (int i = 0; i < menus.size() + 1; i++) {
+                        if (count_arr[i] == max) {
+                            recommend.add(menus.get(i));
+                            result = result + menus.get(i).getTitle() + "\n";
+                        }
+                    }
+                    tv_recommend.setText(result);
 
-            } else if (matches.get(0).equals("아니요") || matches.get(0).equals("아니오")) {
-                finish();
-            } else{
-                for (int i = 0; i < recommend.size(); i++) {
-                    if (matches.get(0).equals(recommend.get(i).getTitle())) {
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("recommend",recommend.get(i).getTitle());
-                        setResult(RESULT_OK,resultIntent);
-                        finish();
-                    }
+                    result = "추천 메뉴로는" + result + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
+                    VoiceStarting2(result);
                 }
+
+                } else if (matches.get(0).equals("아니요") || matches.get(0).equals("아니오")) {
+                    finish();
+                } else {
+                    Log.d("kkkkk", "else 실행2");
+                    String result = "예 혹은 아니오로 다시 한번 말씀해주세요.";
+                    VoiceStarting(result);
+                }
+            }
+
+        @Override
+        public void onPartialResults(Bundle partialResults) {
+        }
+
+        @Override
+        public void onEvent(int eventType, Bundle params) {
+        }
+    };
+
+    public RecognitionListener listener2 = new RecognitionListener() {
+        @Override
+        public void onReadyForSpeech(Bundle params) {
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+        }
+
+        @Override
+        public void onRmsChanged(float rmsdB) {
+        }
+
+        @Override
+        public void onBufferReceived(byte[] buffer) {
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+            iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
+        }
+
+        @Override
+        public void onError(int error) {
+                iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
+                switch (error) {
+                    case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                        if(flag == 0){
+                            //VoiceStarting2(result); // 추천 메뉴로는 치즈김밥이 있습니다.
+                        }else {
+                            VoiceStarting2(result); // 추천 메뉴로는 치즈김밥이 있습니다.
+                        }
+                        break;
+                }
+
+        }
+
+        @Override
+        public void onResults(Bundle results) {
+            int i;
+            matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            for (i = 0; i < recommend.size(); i++) {
+                Log.d("kkkkk11", matches.get(0));
+                if (matches.get(0).equals(recommend.get(i).getTitle())) {
+                    Log.d("kkkkk11", "if문 실행");
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("recommend", recommend.get(i).getTitle());
+                    setResult(RESULT_OK, resultIntent);
+
+                    finish();
+                    break;
+
+                }
+            }
+
+            if(i == recommend.size()) {
+                String str = "추천 메뉴로 다시 한 번 말씀해주세요.";
+                VoiceStarting2(str + result);
+                //VoiceStarting2(result);
+                //Log.d("kkkkk11","else문 실행");
             }
         }
 
@@ -242,7 +385,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.219.107:9000/index";
+            String url = "http://192.168.35.253:9000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
