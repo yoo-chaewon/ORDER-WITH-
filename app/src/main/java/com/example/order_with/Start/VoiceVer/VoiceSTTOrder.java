@@ -186,8 +186,16 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
             img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
             switch (error) {
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    VoiceStarting(startVoice);
-                    break;
+                    if (flag == 1) {
+                        VoiceStarting("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요");
+                        break;
+                    }
+
+                    else {
+                        VoiceStarting(startVoice);
+                        break;
+                    }
+
             }
         }
 

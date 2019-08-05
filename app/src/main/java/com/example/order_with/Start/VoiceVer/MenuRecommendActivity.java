@@ -89,8 +89,17 @@ public class MenuRecommendActivity extends AppCompatActivity {
         tv_recommend = (TextView) findViewById(R.id.tv_recommend);
 
         voice1 = input_menu + voice1 + input_menu + voice2;
+        //VoiceStarting(voice1);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         VoiceStarting(voice1);
     }
+
+
 
     private void VoiceStarting(final String startVoice) {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -133,6 +142,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
     }
 
+
     private void VoiceStarting2(final String startVoice) {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -167,6 +177,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
         });
 
     }
+
 
     class STTThread extends Thread {
         @Override
@@ -382,6 +393,15 @@ public class MenuRecommendActivity extends AppCompatActivity {
         }
     };
 
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tts.stop();
+        tts.shutdown();
+    }
+
+
     class RequestThread extends Thread {
         @Override
         public void run() {
@@ -425,4 +445,6 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
         }
     }
+
+
 }
