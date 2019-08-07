@@ -108,6 +108,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
             public void onInit(int status) {
                 if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
+                    tts.setSpeechRate((float)0.5);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {

@@ -38,7 +38,7 @@ import java.util.Map;
 
 public class VoiceMenu extends AppCompatActivity {
     private TextToSpeech tts;
-    String startVoice = "음성 인식 모드 입니다. 메뉴를 듣고 싶으면 메뉴판, 주문하고자 하시면 주문을 말해 주세요";
+    String startVoice = "음성 인식 모드 입니다. 모든 음성은 효과음 발생 이후 말씀해주세요. 메뉴를 듣고 싶으면 메뉴판, 주문하고자 하시면 주문을 말해 주세요.";
     Intent intent;
     SpeechRecognizer mRecognizer;
     ArrayList<String> matches;
@@ -90,6 +90,7 @@ public class VoiceMenu extends AppCompatActivity {
             public void onInit(int status) {
                 if(status==tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
+                    tts.setSpeechRate((float)0.5);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {

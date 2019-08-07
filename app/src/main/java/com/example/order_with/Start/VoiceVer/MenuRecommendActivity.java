@@ -107,6 +107,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
+                    tts.setSpeechRate((float)0.5);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {
@@ -149,6 +150,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
+                    tts.setSpeechRate((float)0.5);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {
@@ -199,8 +201,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed(new Runnable() {
                 @Override
-                public void run() {
-                    iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+                public void run() {                    iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
+
                     StartSTT2();
                 }
             }, 1000);
