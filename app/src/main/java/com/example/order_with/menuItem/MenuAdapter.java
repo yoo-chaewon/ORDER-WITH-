@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.order_with.R;
@@ -31,11 +32,13 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView menu;
         TextView price;
+        ImageView imageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             menu = (TextView)itemView.findViewById(R.id.tvMenu);
             price = (TextView)itemView.findViewById(R.id.tvPrice);
+            imageView = (ImageView)itemView.findViewById(R.id.ivMenu);
         }
     }
 
@@ -53,6 +56,17 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         final Menu item = myItems.get(i);
         viewHolder.menu.setText(item.getTitle());
         viewHolder.price.setText(item.getPrice());
+        if (item.getTitle().equals("라볶이")) viewHolder.imageView.setImageResource(R.drawable.llabboggi);
+        else if (item.getTitle().equals("갈비탕")) viewHolder.imageView.setImageResource(R.drawable.galbittang);
+        else if (item.getTitle().equals("햄버거")) viewHolder.imageView.setImageResource(R.drawable.burger);
+        else if (item.getTitle().equals("김치찌개")) viewHolder.imageView.setImageResource(R.drawable.kimchizzigae);
+        else if (item.getTitle().equals("쌀밥")) viewHolder.imageView.setImageResource(R.drawable.ssalbab);
+        else if (item.getTitle().equals("치즈떡볶이")) viewHolder.imageView.setImageResource(R.drawable.cheezedduckboki);
+        else if (item.getTitle().equals("치즈라면")) viewHolder.imageView.setImageResource(R.drawable.cheezerameon);
+        else if (item.getTitle().equals("떡라면")) viewHolder.imageView.setImageResource(R.drawable.dduckrameon);
+        else if (item.getTitle().equals("쌀국수")) viewHolder.imageView.setImageResource(R.drawable.ssalguksu);
+        else if (item.getTitle().equals("떡볶이")) viewHolder.imageView.setImageResource(R.drawable.ddckboggi);
+
 
         if (mListener != null){
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
