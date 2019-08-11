@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import static android.speech.tts.TextToSpeech.QUEUE_ADD;
+
 public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.MyClickListener {
     private TextToSpeech tts;
     String addVoice1 = "메뉴안내를 시작하겠습니다. 메뉴 듣기를 중단하고 싶으면 화면 아무곳을 터치해 주세요. 메뉴에는";
@@ -86,10 +88,13 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
     private String MakingVoiceMenu() {
         menuVoice = " ";
+
         for (int i = 0; i < items.size(); i++) {
-            menuVoice += items.get(i).getTitle() + " ,  ";
+            menuVoice += items.get(i).getTitle() + "  ,  ";
+
+           // tts.playSilentUtterance(2000, QUEUE_ADD, null);
         }
-        String resultVoice = addVoice1 + menuVoice + addVoice2;
+        String resultVoice = addVoice1 + menuVoice  + addVoice2;
         return resultVoice;
     }
 
@@ -99,8 +104,10 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             public void onInit(int status) {
                 if(status==tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
+                    tts.setSpeechRate((float)0.5);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(mvoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
+                        //tts.playSilentUtterance(2000, tts.QUEUE_ADD, null);
                     } else {
                         HashMap<String, String> map = new HashMap<>();
                         map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");

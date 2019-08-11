@@ -40,7 +40,7 @@ import java.util.Map;
 
 public class StartActivity extends AppCompatActivity {
     private TextToSpeech tts;
-    String startVoice = "음성이 필요하시면 기계 하단에 이어폰을 꽂아주세요.";
+    String startVoice = "음성이 필요하시면 기계 하단에 이어폰을 꽂아주세요. 이어폰 꽂이는 기계 하단 왼쪽에 있습니다.";
     final int PERMISSION = 1;
     RequestQueue requestQueue;
     ArrayList<Menu> items;
