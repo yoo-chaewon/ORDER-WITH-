@@ -478,7 +478,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.35.253:9000/index";
+            String url = "http://192.168.219.107:9000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
