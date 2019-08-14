@@ -62,7 +62,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
     String result = " ";
     String voice3 = "추천 메뉴가 없습니다.";
     String strMin = " ";
-    ArrayList<String> getDis;
+    int minDistance;
+    String[] arrDis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,20 +132,9 @@ public class MenuRecommendActivity extends AppCompatActivity {
                 }
             }
 
-            int minDistance = M[a.length() -1][b.length()-1];
+            minDistance = M[a.length() -1][b.length()-1];
             strMin = Integer.toString(minDistance);
 
-            getDis = new ArrayList<>();
-            getDis.add(strMin);
-
-
-/*           getDis = new ArrayList<>();
-
-            for(int i=0; i<3; i++) {
-                getDis.add(strMin);
-            }
-
-            Log.d("mindistance111", a + "와" + b + "의 최소 거리 " + getDis.get(0)); */
         }
 
 
@@ -356,20 +346,29 @@ public class MenuRecommendActivity extends AppCompatActivity {
                             d.getDistance(a,b);
 
                             Log.d("mindistance111", "strMin은 " + strMin);
+
                             //========================================================//
 
-                           recommend.add(menus.get(i));
-                           result = result + menus.get(i).getTitle() + "\n";
+                           recommend.add(menus.get(i)); ////////////////
+                           result = result + menus.get(i).getTitle() + "\n"; ///////////////
 
+                           arrDis = new String[menus.size()];
+                           arrDis[i] = strMin;
 
+                           Log.d("mindistance111", "arrDis는 " + arrDis[i]);
+
+                        /*    for(i=0; i<arrDis.length; i++) {
+                                if(arrDis[i] != null) {
+                                    tv_recommend.setText(result + arrDis[i]);
+                                }
+                            } */
                         }
-
                     }
 
-                    //tv_recommend.setText(result);
-
-                    for(int i=0; i<recommend.size(); i++) {
-                        tv_recommend.setText(strMin);
+                    for(int i=0; i<arrDis.length; i++) {
+                        if(arrDis[i] != null) {
+                            tv_recommend.setText(result + arrDis[i]);
+                        }
                     }
 
                     result = "추천 메뉴로는" + result + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
@@ -478,7 +477,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.219.107:9000/index";
+            String url = "http://192.168.35.253:9000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,

@@ -32,7 +32,7 @@ import static android.speech.tts.TextToSpeech.QUEUE_ADD;
 
 public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.MyClickListener {
     private TextToSpeech tts;
-    String addVoice1 = "메뉴안내를 시작하겠습니다. 메뉴 듣기를 중단하고 싶으면 화면 아무곳을 터치해 주세요. 메뉴에는";
+    String addVoice1 = "메뉴안내를 시작하겠습니다. 메뉴 듣기를 중단하고 주문하고자 하면 화면 아무곳을 터치해 주세요. 메뉴에는";
     String addVoice2 = "가 있습니다. 다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요";
     String voice3 = "다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요";
     Intent intent;
@@ -52,7 +52,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
         Intent intent = getIntent();
         items = intent.getParcelableArrayListExtra("servermenu");
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
+   /*     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_voicespeakingmenu);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 4);
         recyclerView.setLayoutManager(layoutManager);
         selectLayoutManager = new LinearLayoutManager(this);
@@ -60,7 +60,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
         MenuAdapter adapter = new MenuAdapter(items);
         recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(this);
+        adapter.setOnItemClickListener(this); */
 
         ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.layout_voiceSpeakingmenu);
         constraintLayout.setOnClickListener(new View.OnClickListener() {
