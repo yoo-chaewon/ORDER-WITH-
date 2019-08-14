@@ -61,6 +61,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
     int flag = 0;
     String result = " ";
     String voice3 = "추천 메뉴가 없습니다.";
+    String strMin = " ";
+    ArrayList<String> getDis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,11 +94,61 @@ public class MenuRecommendActivity extends AppCompatActivity {
         //VoiceStarting(voice1);
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
         VoiceStarting(voice1);
+    }
+
+    public class editDistance {
+        public int M[][] = new int[100][100];
+
+        public int getMin(int a, int b, int c) {
+            int min = a;
+
+            if(min > b)
+                min = b;
+            if(min > c)
+                min = c;
+
+            return min;
+        }
+
+        public void getDistance(String a, String b) {
+            for (int i=0; i<a.length(); i++) {
+                M[i][0] = i;
+            }
+            for(int j=0; j<b.length(); j++) {
+                M[0][j] = j;
+            }
+            for(int i=1; i<a.length(); i++) {
+                for(int j=1; j<b.length(); j++) {
+                    if(a.charAt(i) == b.charAt(j)) {
+                        M[i][j] = M[i-1][j-1];
+                    } else {
+                        M[i][j] = getMin(M[i-1][j], M[i-1][j-1], M[i][j-1]) + 1;
+                    }
+                }
+            }
+
+            int minDistance = M[a.length() -1][b.length()-1];
+            strMin = Integer.toString(minDistance);
+
+            getDis = new ArrayList<>();
+            getDis.add(strMin);
+
+
+/*           getDis = new ArrayList<>();
+
+            for(int i=0; i<3; i++) {
+                getDis.add(strMin);
+            }
+
+            Log.d("mindistance111", a + "와" + b + "의 최소 거리 " + getDis.get(0)); */
+        }
+
+
+
     }
 
 
@@ -295,11 +347,30 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     result = "";
                     for (int i = 0; i < menus.size() + 1; i++) {
                         if (count_arr[i] == max) {
-                            recommend.add(menus.get(i));
-                            result = result + menus.get(i).getTitle() + "\n";
+
+                            //========================================================//
+                            String a = input_menu;
+                            String b = menus.get(i).getTitle();
+
+                            editDistance d = new editDistance();
+                            d.getDistance(a,b);
+
+                            Log.d("mindistance111", "strMin은 " + strMin);
+                            //========================================================//
+
+                           recommend.add(menus.get(i));
+                           result = result + menus.get(i).getTitle() + "\n";
+
+
                         }
+
                     }
-                    tv_recommend.setText(result);
+
+                    //tv_recommend.setText(result);
+
+                    for(int i=0; i<recommend.size(); i++) {
+                        tv_recommend.setText(strMin);
+                    }
 
                     result = "추천 메뉴로는" + result + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
                     VoiceStarting2(result);

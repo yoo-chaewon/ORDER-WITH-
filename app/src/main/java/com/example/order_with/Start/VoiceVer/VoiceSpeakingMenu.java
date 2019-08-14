@@ -91,8 +91,6 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
 
         for (int i = 0; i < items.size(); i++) {
             menuVoice += items.get(i).getTitle() + "  ,  ";
-
-           // tts.playSilentUtterance(2000, QUEUE_ADD, null);
         }
         String resultVoice = addVoice1 + menuVoice  + addVoice2;
         return resultVoice;
@@ -107,7 +105,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
                     tts.setSpeechRate((float)0.5);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(mvoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
-                        //tts.playSilentUtterance(2000, tts.QUEUE_ADD, null);
+                        //tts.playSilentUtterance(5000, tts.QUEUE_ADD, null);
                     } else {
                         HashMap<String, String> map = new HashMap<>();
                         map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");

@@ -6,6 +6,8 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +30,7 @@ import com.example.order_with.R;
 import com.example.order_with.Start.NonVoiceVer.NVoiceMenu;
 import com.example.order_with.Start.VoiceVer.HeadsetReceiver;
 import com.example.order_with.Start.VoiceVer.VoiceMenu;
+import com.example.order_with.Start.VoiceVer.VoiceSpeakingMenu;
 import com.example.order_with.menuItem.Menu;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -128,9 +131,31 @@ public class StartActivity extends AppCompatActivity {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if (status != ERROR) {
+                if(status==tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
+                    } else {
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, map);
+                    }
+
+                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
+                        }
+
+                        @Override
+                        public void onDone(String utteranceId) {
+                            tts.playSilentUtterance(5000, tts.QUEUE_ADD, null);
+                            VoiceStarting();
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+                        }
+                    });
                 }
             }
         });
