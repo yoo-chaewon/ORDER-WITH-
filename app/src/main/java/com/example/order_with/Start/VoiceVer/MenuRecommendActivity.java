@@ -60,6 +60,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     String voice2 = "와 유사한 추천 메뉴를 받고 싶으면, 예 그렇지 않으면 아니오.로 답하세요.";
     int flag = 0;
     String result = " ";
+    String result1 = " ";
     String voice3 = "추천 메뉴가 없습니다.";
     String strMin = " ";
     int minDistance;
@@ -134,7 +135,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
             }
 
             minDistance = M[a.length() -1][b.length()-1];
-            //strMin = Integer.toString(minDistance);
+            strMin = Integer.toString(minDistance);
         }
 
 
@@ -347,7 +348,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
                             editDistance d = new editDistance();
                             d.getDistance(a,b);
 
-                            //Log.d("mindistance111", "strMin은 " + strMin);
+                            Log.d("mindistance111", menus.get(i).getTitle() + "strMin은 " + strMin);
 
                             arrDis[i] = minDistance;
                             //Log.d("mindistance111", "arrDis는 " + i + " : " + arrDis[i]);
@@ -366,18 +367,24 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     for(int i=0; i<arrDis.length; i++) {
                         if (arrDis[i] != 0) {
                             min1 = arrDis[i];
+                            result1 = menus.get(i).getTitle();
+
                         for (i = i + 1; i < arrDis.length; i++) {
                             if (arrDis[i] != 0) {
                                 flag = arrDis[i];
-                                Log.d("mindistance111", "sss는 " + i + " : " + flag);
+                                Log.d("mindistance111", "flag는 " + i + " : " + flag);
 
                                 if (min1 >= flag) {
                                     min = flag;
-                                    Log.d("mindistance111", "min11는 " + i + " : " + min);
-                                    Log.d("mindistance111", "min11는 " + menus.get(i).getTitle());
-
                                     result = result + menus.get(i).getTitle() + "\n";
-                                    tv_recommend.setText(result);
+                                    result1 = result;
+                                    tv_recommend.setText(result1);
+                                }
+
+                                else {
+                                    result = menus.get(i).getTitle() + "\n" ;
+                                    result1 = result1 + "\n" + result;
+                                    tv_recommend.setText(result1);
                                 }
                             }
                         }
@@ -386,8 +393,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
                     }
 
-                    result = "추천 메뉴로는" + result + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
-                    VoiceStarting2(result);
+                    result1 = "추천 메뉴로는" + result1 + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
+                    VoiceStarting2(result1);
                 }
 
                 } else if (matches.get(0).equals("아니요") || matches.get(0).equals("아니오")) {
@@ -492,7 +499,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.35.253:9000/index";
+            String url = "http://192.168.10.109:9000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
