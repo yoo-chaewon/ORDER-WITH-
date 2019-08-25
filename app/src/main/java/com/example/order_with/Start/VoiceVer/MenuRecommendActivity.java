@@ -43,7 +43,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
+//TODO 추천메뉴 말해준 이후 음성 반복되도록
 public class MenuRecommendActivity extends AppCompatActivity {
     private TextToSpeech tts;
     RequestQueue requestQueue;
@@ -376,7 +376,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                        if (recommend2.size() > 3) break;
+                        if (recommend2.size() > 3) break;//TODO 메뉴 최소 3개, 동점이 있을 경우 더 많이 추천될 수 있음.
                     }
                     for (int i = 0; i < recommend2.size(); i++){
                         Log.d("aaaaaaaasortedresult", recommend2.get(i).toString());
