@@ -39,6 +39,7 @@ import com.google.gson.JsonParser;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     ArrayList<Index> items;
     ArrayList<Menu> menus;
     ArrayList<Menu> recommend;
+    ArrayList<Menu> recommend2;
     String input_menu;
     TextView tv_recommend;
     SpeechRecognizer mRecognizer;
@@ -59,8 +61,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
     String voice1 = "라는 메뉴는 존재하지 않습니다.";
     String voice2 = "와 유사한 추천 메뉴를 받고 싶으면, 예 그렇지 않으면 아니오.로 답하세요.";
     int flag = 0;
-    String result = " ";
-    String result1 = " ";
+    String result = "";
+    String result1 = "";
     String voice3 = "추천 메뉴가 없습니다.";
     String strMin = " ";
     int minDistance;
@@ -75,6 +77,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
         iv_recommend = (ImageView) findViewById(R.id.iv_recommend);
 
         recommend = new ArrayList<>();
+        recommend2 = new ArrayList<>();
         menus = new ArrayList<>();
         Intent getintent = getIntent();
         menus = getintent.getParcelableArrayListExtra("menu_fromSTT");
@@ -320,12 +323,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
                                 count_arr[Integer.parseInt(split[k])]++;
                             }
                         }
-
                         else {
-                            // 추천 메뉴 없을 경우 추가
-                            Log.d("match2222", "else 실행");
                             VoiceStarting(voice3);
-
                         }
                     }
                 }
@@ -337,8 +336,54 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     }
                     result = "";
 
-                    arrDis = new int[menus.size()];
-                    for (int i = 0; i < menus.size() + 1; i++) {
+                    for (int i = 0; i < menus.size() + 1; i++){
+                        if (count_arr[i] == max){
+                            recommend.add(menus.get(i));
+                        }
+                    }
+                    arrDis = new int[recommend.size()];
+                    int[] sortArrDis = new int[recommend.size()];
+                    for (int i = 0; i < recommend.size(); i++){
+                        String a = input_menu;
+                        String b = recommend.get(i).getTitle();
+                        editDistance d = new editDistance();
+                        d.getDistance(a,b);
+
+                        arrDis[i] = minDistance;
+                        sortArrDis[i] = minDistance;
+                        Log.d("chaeon", recommend.get(i).getTitle() + Integer.toString(arrDis[i]));
+                    }
+
+                    Arrays.sort(sortArrDis);
+                    for (int i = 0; i < recommend.size(); i++){
+                        Log.d("aaaaaaaarecommend", recommend.get(i).getTitle());
+                    }
+                    for (int i = 0; i < sortArrDis.length; i++){
+                        Log.d("aaaaaaaaArr", Integer.toString(arrDis[i]));
+                    }
+                    for (int i = 0; i < sortArrDis.length; i++){
+                        Log.d("aaaaaaaasortedArr", Integer.toString(sortArrDis[i]));
+                    }
+                    int cur = -1;
+                    for (int i = 0; i < sortArrDis.length; i ++){
+                        if (cur != sortArrDis[i]){
+                            cur = sortArrDis[i];
+                            Log.d("aaaaaaaacur", Integer.toString(cur));
+                            for (int j = 0; j < arrDis.length; j++){
+                                if (arrDis[j] == cur){
+                                    recommend2.add(recommend.get(j));
+                                    result1 += recommend.get(j).getTitle() + "\n";
+                                }
+                            }
+                        }
+                        if (recommend2.size() > 3) break;
+                    }
+                    for (int i = 0; i < recommend2.size(); i++){
+                        Log.d("aaaaaaaasortedresult", recommend2.get(i).toString());
+                    }
+
+
+                    /*for (int i = 0; i < menus.size() + 1; i++) {
                         if (count_arr[i] == max) {
 
                             //========================================================//
@@ -360,9 +405,9 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
                         }
 
-                    }
+                    }*/
 
-                    int flag = 0;
+                    /*int flag = 0;
                     int min1 = 0;
                     for(int i=0; i<arrDis.length; i++) {
                         if (arrDis[i] != 0) {
@@ -391,8 +436,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
                     }
 
-                    }
-
+                    }*/
+                    tv_recommend.setText(result1);
                     result1 = "추천 메뉴로는" + result1 + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
                     VoiceStarting2(result1);
                 }
@@ -499,7 +544,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.10.109:9000/index";
+            String url = "http://192.168.219.103:8090/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
@@ -536,9 +581,6 @@ public class MenuRecommendActivity extends AppCompatActivity {
             items.add(new Index(((JsonObject) jsonArray.get(i)).get("word").getAsCharacter(),
                     ((JsonObject) jsonArray.get(i)).get("count").getAsInt(),
                     ((JsonObject) jsonArray.get(i)).get("list").getAsString()));
-
         }
     }
-
-
 }

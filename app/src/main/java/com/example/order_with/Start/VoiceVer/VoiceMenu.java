@@ -214,7 +214,7 @@ public class VoiceMenu extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.10.109:9000/menu";
+            String url = "http://192.168.219.103:8090/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
@@ -244,7 +244,6 @@ public class VoiceMenu extends AppCompatActivity {
     }
 
     public void processResponse(String response) {
-        Gson gson = new Gson();
         JsonParser parser = new JsonParser();
         JsonArray jsonArray = (JsonArray) parser.parse(response);
         items = new ArrayList<Menu>();
