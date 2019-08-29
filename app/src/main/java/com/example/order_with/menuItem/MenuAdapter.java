@@ -65,7 +65,14 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         else if (item.getTitle().equals("치즈라면")) viewHolder.imageView.setImageResource(R.drawable.cheezerameon);
         else if (item.getTitle().equals("떡라면")) viewHolder.imageView.setImageResource(R.drawable.dduckrameon);
         else if (item.getTitle().equals("쌀국수")) viewHolder.imageView.setImageResource(R.drawable.ssalguksu);
-        else if (item.getTitle().equals("떡볶이")) viewHolder.imageView.setImageResource(R.drawable.ddckboggi);
+        else if (item.getTitle().equals("김밥")) viewHolder.imageView.setImageResource(R.drawable.kimbab);
+        else if (item.getTitle().equals("야채김밥")) viewHolder.imageView.setImageResource(R.drawable.yachaekimbab);
+        else if (item.getTitle().equals("치킨카스김밥")) viewHolder.imageView.setImageResource(R.drawable.chickenkimbab);
+        else if (item.getTitle().equals("치즈김밥")) viewHolder.imageView.setImageResource(R.drawable.cheezekimbab);
+        else if (item.getTitle().equals("라면")) viewHolder.imageView.setImageResource(R.drawable.rameon);
+        else if (item.getTitle().equals("떡볶이")) viewHolder.imageView.setImageResource(R.drawable.dduckboggi);
+        else if (item.getTitle().equals("김치볶음밥")) viewHolder.imageView.setImageResource(R.drawable.kimchibboggumbab);
+        else if (item.getTitle().equals("김치가츠동")) viewHolder.imageView.setImageResource(R.drawable.kimchigachidong);
 
 
         if (mListener != null){

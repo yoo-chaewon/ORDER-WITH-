@@ -38,7 +38,7 @@ import java.util.Map;
 
 public class VoiceMenu extends AppCompatActivity {
     private TextToSpeech tts;
-    String startVoice = "음성 인식 모드 입니다. 모든 음성은 효과음 발생 이후 말씀해주세요. 메뉴를 듣고 싶으면 메뉴판, 주문하고자 하시면 주문을 말해 주세요.";
+    String startVoice = "음성 인식 모드 입ㅎ니다. 모든 음성은 효과음 발생 이후 말씀해주세요. 메뉴를 듣고 싶으면 메뉴판, 주문하고자 하시면 주문을 말해 주세요.";
     Intent intent;
     SpeechRecognizer mRecognizer;
     ArrayList<String> matches;
@@ -214,7 +214,7 @@ public class VoiceMenu extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.219.103:8090/menu";
+            String url = "http://192.168.219.103:8080/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
