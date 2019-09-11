@@ -1,6 +1,7 @@
 package com.example.order_with.Start.VoiceVer;
 
 import android.content.Intent;
+import android.icu.text.LocaleDisplayNames;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -90,13 +91,13 @@ public class VoiceMenu extends AppCompatActivity {
             public void onInit(int status) {
                 if(status==tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.setSpeechRate((float)0.5);
+                    tts.setSpeechRate((float)1.0);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
+                        tts.speak(in_voice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {
                         HashMap<String, String> map = new HashMap<>();
                         map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");
-                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, map);
+                        tts.speak(in_voice, TextToSpeech.QUEUE_FLUSH, map);
                     }
 
                     tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
@@ -171,6 +172,9 @@ public class VoiceMenu extends AppCompatActivity {
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
                     VoiceStarting(startVoice);
                     break;
+                case SpeechRecognizer.ERROR_NO_MATCH:
+                    VoiceStarting(startVoice);
+                    break;
             }
         }
 
@@ -214,7 +218,7 @@ public class VoiceMenu extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.219.107:9000/menu";
+            String url = "http://192.168.35.169:8000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
@@ -244,7 +248,6 @@ public class VoiceMenu extends AppCompatActivity {
     }
 
     public void processResponse(String response) {
-        Gson gson = new Gson();
         JsonParser parser = new JsonParser();
         JsonArray jsonArray = (JsonArray) parser.parse(response);
         items = new ArrayList<Menu>();

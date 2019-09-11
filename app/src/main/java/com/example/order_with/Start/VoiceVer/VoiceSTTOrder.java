@@ -24,6 +24,7 @@ import com.example.order_with.R;
 import com.example.order_with.ReciptActivity;
 import com.example.order_with.menuItem.Menu;
 import com.example.order_with.menuItem.MenuAdapter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -108,7 +109,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
             public void onInit(int status) {
                 if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.setSpeechRate((float)0.5);
+                    tts.setSpeechRate((float) 1);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {
@@ -148,7 +149,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
                     img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                     StartSTT();
                 }
-            },1000);
+            }, 1000);
         }
     }
 
@@ -190,13 +191,18 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
                     if (flag == 1) {
                         VoiceStarting("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요");
                         break;
-                    }
-
-                    else {
+                    } else {
                         VoiceStarting(startVoice);
                         break;
                     }
-
+                case SpeechRecognizer.ERROR_NO_MATCH:
+                    if (flag == 1) {
+                        VoiceStarting("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요");
+                        break;
+                    } else {
+                        VoiceStarting(startVoice);
+                        break;
+                    }
             }
         }
 
@@ -218,11 +224,11 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
 
     public void VoiceMatch(String match) {
         int i;
-        if(match.equals("결제")){
+        if (match.equals("결제")) {
             Intent intent = new Intent(VoiceSTTOrder.this, ReciptActivity.class);
             intent.putExtra("clickedItem", menuList);
             startActivity(intent);
-        }else {
+        } else {
             for (i = 0; i < items.size(); i++) {
                 if (match.equals(items.get(i).getTitle())) {
                     Menu voiceSelect = new Menu(items.get(i).getTitle(), items.get(i).getPrice());
@@ -231,7 +237,7 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
                     break;
                 }
             }
-            if(i == items.size()) {
+            if (i == items.size()) {
                 Intent intent2 = new Intent(this, MenuRecommendActivity.class);
                 intent2.putExtra("menu_name", match);
                 intent2.putExtra("menu_fromSTT", items);
@@ -242,8 +248,8 @@ public class VoiceSTTOrder extends AppCompatActivity implements MenuAdapter.MyCl
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK){
-            switch (requestCode){
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case 3000: {
                     flag = 1;
                     VoiceStarting("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요");

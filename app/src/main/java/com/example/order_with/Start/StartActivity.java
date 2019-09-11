@@ -6,7 +6,10 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,6 +31,7 @@ import com.example.order_with.R;
 import com.example.order_with.Start.NonVoiceVer.NVoiceMenu;
 import com.example.order_with.Start.VoiceVer.HeadsetReceiver;
 import com.example.order_with.Start.VoiceVer.VoiceMenu;
+import com.example.order_with.Start.VoiceVer.VoiceSpeakingMenu;
 import com.example.order_with.menuItem.Menu;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -40,7 +44,7 @@ import java.util.Map;
 
 public class StartActivity extends AppCompatActivity {
     private TextToSpeech tts;
-    String startVoice = "음성이 필요하시면 기계 하단에 이어폰을 꽂아주세요. 이어폰 꽂이는 기계 하단 왼쪽에 있습니다.";
+    String startVoice = "음성이 필요하시면 기계 하단에 이어폰을 꽂아주세요. 이어폰 꽂이는 기계 하단 왼쪽에 있습니다. 이어폰이 없는 경우 화면 아무곳을 터치해 주세요.";
     final int PERMISSION = 1;
     RequestQueue requestQueue;
     ArrayList<Menu> items;
@@ -71,21 +75,30 @@ public class StartActivity extends AppCompatActivity {
                 startNonVoiceVer();
             }
         });
-        Button btnVoiceStart = (Button)findViewById(R.id.btnVoiceStart_start);
-        btnVoiceStart.setOnClickListener(new View.OnClickListener() {
+//        Button btnVoiceStart = (Button)findViewById(R.id.btnVoiceStart_start);
+//        btnVoiceStart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getApplicationContext(), VoiceMenu.class);
+//                startActivity(intent);
+//            }
+//        });
+        startVoiceVer();
+
+        ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.view_start);
+        layout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), VoiceMenu.class);
                 startActivity(intent);
             }
         });
-        startVoiceVer();
     }
 
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.219.107:9000/menu";
+            String url = "http://192.168.35.169:8000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
@@ -128,9 +141,31 @@ public class StartActivity extends AppCompatActivity {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if (status != ERROR) {
+                if(status==tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
+                    } else {
+                        HashMap<String, String> map = new HashMap<>();
+                        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");
+                        tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, map);
+                    }
+
+                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
+                        }
+
+                        @Override
+                        public void onDone(String utteranceId) {
+                            tts.playSilentUtterance(5000, tts.QUEUE_ADD, null);
+                            VoiceStarting();
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+                        }
+                    });
                 }
             }
         });
