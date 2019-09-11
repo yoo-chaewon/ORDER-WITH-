@@ -349,8 +349,42 @@ public class MenuRecommendActivity extends AppCompatActivity {
                             recommend.add(menus.get(i));
                         }
                     }
+
+                    max = -1;
+                    ArrayList<Integer> count_result = new ArrayList<>();
+                    for (int k = 0; k < recommend.size(); k++){
+                        int[][] map = new int[input_menu.length()+1][recommend.get(k).getTitle().length()+1];
+                        for (int i = 1; i <= input_menu.length(); i++){
+                            for (int j = 1; j <= recommend.get(k).getTitle().length(); j++){
+                                if (input_menu.charAt(i-1) == recommend.get(k).getTitle().charAt(j-1)){
+                                    map[i][j] = map[i-1][j-1] + 1;
+                                }else {
+                                    map[i][j] = Math.max(map[i-1][j], map[i][j-1]);
+                                }
+                            }
+                        }
+                        max = Math.max(max, map[input_menu.length()][recommend.get(k).getTitle().length()]);
+                        count_result.add(map[input_menu.length()][recommend.get(k).getTitle().length()]);
+                    }
+
+                    for (int i = 0; i < count_result.size(); i++){
+                        Log.d("채옹", recommend.get(i) + "" +count_result.get(i));
+                    }
+
+                    while (true){
+                        for (int i = 0; i < count_result.size(); i++){
+                            if (count_result.get(i) == max){
+                                recommend2.add(recommend.get(i));
+                                result1 += recommend.get(i).getTitle();
+                            }
+                        }
+                        if (recommend2.size() > 4) break;//TODO 갯수 수정
+                        if (recommend2.size() == recommend.size()) break;//TODO 추천 메뉴 자체가 4개가 되지 않을 경우 모두 추천되고 머시기 졸려서 생각 못하겠음
+                        max--;
+                    }
+                    /*미진꺼 채원이가 고침
                     arrDis = new int[recommend.size()];
-                    int[] sortArrDis = new int[recommend.size()];//TODO hash로 바꾸기
+                    int[] sortArrDis = new int[recommend.size()];
                     for (int i = 0; i < recommend.size(); i++){
                         String a = input_menu;
                         String b = recommend.get(i).getTitle();
@@ -384,13 +418,13 @@ public class MenuRecommendActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                        if (recommend2.size() > 3) break;//TODO 메뉴 최소 3개, 동점이 있을 경우 더 많이 추천될 수 있음.
+                        if (recommend2.size() > 3) break;
                     }
                     for (int i = 0; i < recommend2.size(); i++){
                         Log.d("aaaaaaaasortedresult", recommend2.get(i).toString());
-                    }
-//체원 끝
+                    }*/
 
+                    //체원 끝
                     /*for (int i = 0; i < menus.size() + 1; i++) {
                         if (count_arr[i] == max) {
 
@@ -443,7 +477,6 @@ public class MenuRecommendActivity extends AppCompatActivity {
                         }
 
                     }
-
                     }*/
                     tv_recommend.setText(result1);
                     result1 = "추천 메뉴로는" + result1 + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
@@ -453,7 +486,6 @@ public class MenuRecommendActivity extends AppCompatActivity {
                 } else if (matches.get(0).equals("아니요") || matches.get(0).equals("아니오")) {
                     finish();
                 } else {
-                    Log.d("kkkkk", "else 실행2");
                     String result = "예 혹은 아니오로 다시 한번 말씀해주세요.";
                     VoiceStarting(result);
                 }
