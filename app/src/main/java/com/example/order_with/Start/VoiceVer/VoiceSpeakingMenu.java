@@ -102,7 +102,7 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             public void onInit(int status) {
                 if(status==tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.setSpeechRate((float)0.5);
+                    tts.setSpeechRate((float)1);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(mvoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                         //tts.playSilentUtterance(5000, tts.QUEUE_ADD, null);
@@ -181,6 +181,9 @@ public class VoiceSpeakingMenu extends AppCompatActivity implements MenuAdapter.
             img_mic.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
             switch (error) {
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                    VoiceStarting(voice3);
+                    break;
+                case SpeechRecognizer.ERROR_NO_MATCH:
                     VoiceStarting(voice3);
                     break;
             }

@@ -9,6 +9,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -43,7 +44,7 @@ import java.util.Map;
 
 public class StartActivity extends AppCompatActivity {
     private TextToSpeech tts;
-    String startVoice = "음성이 필요하시면 기계 하단에 이어폰을 꽂아주세요. 이어폰 꽂이는 기계 하단 왼쪽에 있습니다.";
+    String startVoice = "음성이 필요하시면 기계 하단에 이어폰을 꽂아주세요. 이어폰 꽂이는 기계 하단 왼쪽에 있습니다. 이어폰이 없는 경우 화면 아무곳을 터치해 주세요.";
     final int PERMISSION = 1;
     RequestQueue requestQueue;
     ArrayList<Menu> items;
@@ -74,21 +75,30 @@ public class StartActivity extends AppCompatActivity {
                 startNonVoiceVer();
             }
         });
-        Button btnVoiceStart = (Button)findViewById(R.id.btnVoiceStart_start);
-        btnVoiceStart.setOnClickListener(new View.OnClickListener() {
+//        Button btnVoiceStart = (Button)findViewById(R.id.btnVoiceStart_start);
+//        btnVoiceStart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getApplicationContext(), VoiceMenu.class);
+//                startActivity(intent);
+//            }
+//        });
+        startVoiceVer();
+
+        ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.view_start);
+        layout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), VoiceMenu.class);
                 startActivity(intent);
             }
         });
-        startVoiceVer();
     }
 
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.219.103:8080/menu";
+            String url = "http://192.168.35.169:8000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,

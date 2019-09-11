@@ -153,7 +153,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.setSpeechRate((float)0.5);
+                    tts.setSpeechRate((float)1);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {
@@ -196,7 +196,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.setSpeechRate((float)0.5);
+                    tts.setSpeechRate((float)1);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {
@@ -247,8 +247,8 @@ public class MenuRecommendActivity extends AppCompatActivity {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed(new Runnable() {
                 @Override
-                public void run() {                    iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
-
+                public void run() {
+                    iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic));
                     StartSTT2();
                 }
             }, 1000);
@@ -304,6 +304,13 @@ public class MenuRecommendActivity extends AppCompatActivity {
                         VoiceStarting(result);
                     }
                     break;
+                case SpeechRecognizer.ERROR_NO_MATCH:
+                    if(flag == 0){
+                        VoiceStarting(voice1);
+                    }else {
+                        VoiceStarting(result);
+                    }
+                    break;
             }
         }
         @Override
@@ -329,6 +336,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     }
                 }
 
+
                 if (count == 1) {
                     int max = -1;
                     for (int i = 0; i < menus.size() + 1; i++) {
@@ -342,7 +350,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
                         }
                     }
                     arrDis = new int[recommend.size()];
-                    int[] sortArrDis = new int[recommend.size()];
+                    int[] sortArrDis = new int[recommend.size()];//TODO hash로 바꾸기
                     for (int i = 0; i < recommend.size(); i++){
                         String a = input_menu;
                         String b = recommend.get(i).getTitle();
@@ -381,7 +389,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     for (int i = 0; i < recommend2.size(); i++){
                         Log.d("aaaaaaaasortedresult", recommend2.get(i).toString());
                     }
-
+//체원 끝
 
                     /*for (int i = 0; i < menus.size() + 1; i++) {
                         if (count_arr[i] == max) {
@@ -487,11 +495,10 @@ public class MenuRecommendActivity extends AppCompatActivity {
                 iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
                 switch (error) {
                     case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                        if(flag == 0){
-                            //VoiceStarting2(result); // 추천 메뉴로는 치즈김밥이 있습니다.
-                        }else {
-                            VoiceStarting2(result); // 추천 메뉴로는 치즈김밥이 있습니다.
-                        }
+                        VoiceStarting2(result1);
+                        break;
+                    case SpeechRecognizer.ERROR_NO_MATCH:
+                        VoiceStarting2(result1);
                         break;
                 }
 
@@ -502,13 +509,10 @@ public class MenuRecommendActivity extends AppCompatActivity {
             int i;
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             for (i = 0; i < recommend.size(); i++) {
-                Log.d("kkkkk11", matches.get(0));
                 if (matches.get(0).equals(recommend.get(i).getTitle())) {
-                    Log.d("kkkkk11", "if문 실행");
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("recommend", recommend.get(i).getTitle());
                     setResult(RESULT_OK, resultIntent);
-
                     finish();
                     break;
 
@@ -517,7 +521,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
             if(i == recommend.size()) {
                 String str = "추천 메뉴로 다시 한 번 말씀해주세요.";
-                VoiceStarting2(str + result);
+                VoiceStarting2(str + result1);
                 //VoiceStarting2(result);
                 //Log.d("kkkkk11","else문 실행");
             }
@@ -544,7 +548,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.219.103:8080/index";
+            String url = "http://192.168.35.169:8000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
