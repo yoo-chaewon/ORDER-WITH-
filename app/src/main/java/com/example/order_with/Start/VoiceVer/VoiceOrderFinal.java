@@ -68,7 +68,7 @@ public class VoiceOrderFinal extends AppCompatActivity {
             public void onInit(int status) {
                 if (status != ERROR) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.setSpeechRate((float)0.5);
+                    tts.setSpeechRate((float)1.0);
                     tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null);
                 }
             }
