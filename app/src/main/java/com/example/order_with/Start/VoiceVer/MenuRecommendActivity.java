@@ -10,17 +10,11 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -32,19 +26,16 @@ import com.android.volley.toolbox.Volley;
 import com.example.order_with.R;
 import com.example.order_with.menuItem.Index;
 import com.example.order_with.menuItem.Menu;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-//TODO 추천메뉴 말해준 이후 음성 반복되도록
 public class MenuRecommendActivity extends AppCompatActivity {
     private TextToSpeech tts;
     RequestQueue requestQueue;
@@ -321,10 +312,6 @@ public class MenuRecommendActivity extends AppCompatActivity {
                         count_result.add(map[input_menu.length()][recommend.get(k).getTitle().length()]);
                     }
 
-                    for (int i = 0; i < count_result.size(); i++) {
-                        Log.d("채옹", recommend.get(i) + "" + count_result.get(i));
-                    }
-
                     while (true) {
                         for (int i = 0; i < count_result.size(); i++) {
                             if (count_result.get(i) == max) {
@@ -332,9 +319,9 @@ public class MenuRecommendActivity extends AppCompatActivity {
                                 result1 += recommend.get(i).getTitle() + "\n";
                             }
                         }
-                        if (recommend2.size() > 4) break;//TODO 갯수 수정
+                        if (recommend2.size() > 4) break;
                         if (recommend2.size() == recommend.size())
-                            break;//TODO 추천 메뉴 자체가 4개가 되지 않을 경우 모두 추천되고 머시기 졸려서 생각 못하겠음
+                            break;
                         max--;
                     }
 

@@ -2,27 +2,35 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="5">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_voicespeakingmenu"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/rv_addmenu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:isScrollContainer="true"
+        android:layout_weight="3"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_voicespeakingmenu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+    </ScrollView>
+
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_addmenu"
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:background="@color/yellow"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
