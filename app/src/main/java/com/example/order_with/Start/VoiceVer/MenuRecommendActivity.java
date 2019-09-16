@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 //TODO 추천메뉴 말해준 이후 음성 반복되도록
 public class MenuRecommendActivity extends AppCompatActivity {
     private TextToSpeech tts;
@@ -64,10 +65,6 @@ public class MenuRecommendActivity extends AppCompatActivity {
     String result = "";
     String result1 = "";
     String voice3 = "추천 메뉴가 없습니다.";
-    String strMin = " ";
-    int minDistance;
-    int[] arrDis;
-    int min;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +94,6 @@ public class MenuRecommendActivity extends AppCompatActivity {
         tv_recommend = (TextView) findViewById(R.id.tv_recommend);
 
         voice1 = input_menu + voice1 + input_menu + voice2;
-        //VoiceStarting(voice1);
     }
 
     @Override
@@ -106,46 +102,6 @@ public class MenuRecommendActivity extends AppCompatActivity {
         VoiceStarting(voice1);
     }
 
-    public class editDistance {
-        public int M[][] = new int[100][100];
-
-        public int getMin(int a, int b, int c) {
-            int min = a;
-
-            if(min > b)
-                min = b;
-            if(min > c)
-                min = c;
-
-            return min;
-        }
-
-        public void getDistance(String a, String b) {
-            for (int i=0; i<a.length(); i++) {
-                M[i][0] = i;
-            }
-            for(int j=0; j<b.length(); j++) {
-                M[0][j] = j;
-            }
-            for(int i=1; i<a.length(); i++) {
-                for(int j=1; j<b.length(); j++) {
-                    if(a.charAt(i) == b.charAt(j)) {
-                        M[i][j] = M[i-1][j-1];
-                    } else {
-                        M[i][j] = getMin(M[i-1][j], M[i-1][j-1], M[i][j-1]) + 1;
-                    }
-                }
-            }
-
-            minDistance = M[a.length() -1][b.length()-1];
-            strMin = Integer.toString(minDistance);
-        }
-
-
-
-    }
-
-
 
     private void VoiceStarting(final String startVoice) {
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -153,7 +109,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.setSpeechRate((float)1);
+                    tts.setSpeechRate((float) 1);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {
@@ -169,11 +125,9 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
                         @Override
                         public void onDone(String utteranceId) {
-                            if(startVoice == voice3) {
+                            if (startVoice == voice3) {
                                 finish();
-                            }
-
-                            else {
+                            } else {
                                 STTThread sttThread = new STTThread();
                                 sttThread.start();
                             }
@@ -196,7 +150,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
             public void onInit(int status) {
                 if (status == tts.SUCCESS) {
                     tts.setLanguage(Locale.KOREAN);
-                    tts.setSpeechRate((float)1);
+                    tts.setSpeechRate((float) 1);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         tts.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode() + "");
                     } else {
@@ -298,21 +252,22 @@ public class MenuRecommendActivity extends AppCompatActivity {
             iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
             switch (error) {
                 case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                    if(flag == 0){
+                    if (flag == 0) {
                         VoiceStarting(voice1);
-                    }else {
+                    } else {
                         VoiceStarting(result);
                     }
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
-                    if(flag == 0){
+                    if (flag == 0) {
                         VoiceStarting(voice1);
-                    }else {
+                    } else {
                         VoiceStarting(result);
                     }
                     break;
             }
         }
+
         @Override
         public void onResults(Bundle results) {
             int count = 0;
@@ -329,8 +284,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
                             for (int k = 0; k < split.length; k++) {
                                 count_arr[Integer.parseInt(split[k])]++;
                             }
-                        }
-                        else {
+                        } else {
                             VoiceStarting(voice3);
                         }
                     }
@@ -344,120 +298,58 @@ public class MenuRecommendActivity extends AppCompatActivity {
                     }
                     result = "";
 
-                    for (int i = 0; i < menus.size() + 1; i++){
-                        if (count_arr[i] == max){
+                    for (int i = 0; i < menus.size() + 1; i++) {
+                        if (count_arr[i] == max) {
                             recommend.add(menus.get(i));
                         }
                     }
-                    arrDis = new int[recommend.size()];
-                    int[] sortArrDis = new int[recommend.size()];//TODO hash로 바꾸기
-                    for (int i = 0; i < recommend.size(); i++){
-                        String a = input_menu;
-                        String b = recommend.get(i).getTitle();
-                        editDistance d = new editDistance();
-                        d.getDistance(a,b);
 
-                        arrDis[i] = minDistance;
-                        sortArrDis[i] = minDistance;
-                        Log.d("chaeon", recommend.get(i).getTitle() + Integer.toString(arrDis[i]));
-                    }
-
-                    Arrays.sort(sortArrDis);
-                    for (int i = 0; i < recommend.size(); i++){
-                        Log.d("aaaaaaaarecommend", recommend.get(i).getTitle());
-                    }
-                    for (int i = 0; i < sortArrDis.length; i++){
-                        Log.d("aaaaaaaaArr", Integer.toString(arrDis[i]));
-                    }
-                    for (int i = 0; i < sortArrDis.length; i++){
-                        Log.d("aaaaaaaasortedArr", Integer.toString(sortArrDis[i]));
-                    }
-                    int cur = -1;
-                    for (int i = 0; i < sortArrDis.length; i ++){
-                        if (cur != sortArrDis[i]){
-                            cur = sortArrDis[i];
-                            Log.d("aaaaaaaacur", Integer.toString(cur));
-                            for (int j = 0; j < arrDis.length; j++){
-                                if (arrDis[j] == cur){
-                                    recommend2.add(recommend.get(j));
-                                    result1 += recommend.get(j).getTitle() + "\n";
+                    max = -1;
+                    ArrayList<Integer> count_result = new ArrayList<>();
+                    for (int k = 0; k < recommend.size(); k++) {
+                        int[][] map = new int[input_menu.length() + 1][recommend.get(k).getTitle().length() + 1];
+                        for (int i = 1; i <= input_menu.length(); i++) {
+                            for (int j = 1; j <= recommend.get(k).getTitle().length(); j++) {
+                                if (input_menu.charAt(i - 1) == recommend.get(k).getTitle().charAt(j - 1)) {
+                                    map[i][j] = map[i - 1][j - 1] + 1;
+                                } else {
+                                    map[i][j] = Math.max(map[i - 1][j], map[i][j - 1]);
                                 }
                             }
                         }
-                        if (recommend2.size() > 3) break;//TODO 메뉴 최소 3개, 동점이 있을 경우 더 많이 추천될 수 있음.
+                        max = Math.max(max, map[input_menu.length()][recommend.get(k).getTitle().length()]);
+                        count_result.add(map[input_menu.length()][recommend.get(k).getTitle().length()]);
                     }
-                    for (int i = 0; i < recommend2.size(); i++){
-                        Log.d("aaaaaaaasortedresult", recommend2.get(i).toString());
+
+                    for (int i = 0; i < count_result.size(); i++) {
+                        Log.d("채옹", recommend.get(i) + "" + count_result.get(i));
                     }
-//체원 끝
 
-                    /*for (int i = 0; i < menus.size() + 1; i++) {
-                        if (count_arr[i] == max) {
-
-                            //========================================================//
-                            String a = input_menu;
-                            String b = menus.get(i).getTitle();
-
-                            editDistance d = new editDistance();
-                            d.getDistance(a,b);
-
-                            Log.d("mindistance111", menus.get(i).getTitle() + "strMin은 " + strMin);
-
-                            arrDis[i] = minDistance;
-                            //Log.d("mindistance111", "arrDis는 " + i + " : " + arrDis[i]);
-
-                            //========================================================//
-
-                           recommend.add(menus.get(i)); ////////////////
-                           //result = result + menus.get(i).getTitle() + "\n"; ///////////////
-
-                        }
-
-                    }*/
-
-                    /*int flag = 0;
-                    int min1 = 0;
-                    for(int i=0; i<arrDis.length; i++) {
-                        if (arrDis[i] != 0) {
-                            min1 = arrDis[i];
-                            result1 = menus.get(i).getTitle();
-
-                        for (i = i + 1; i < arrDis.length; i++) {
-                            if (arrDis[i] != 0) {
-                                flag = arrDis[i];
-                                Log.d("mindistance111", "flag는 " + i + " : " + flag);
-
-                                if (min1 >= flag) {
-                                    min = flag;
-                                    result = result + menus.get(i).getTitle() + "\n";
-                                    result1 = result;
-                                    tv_recommend.setText(result1);
-                                }
-
-                                else {
-                                    result = menus.get(i).getTitle() + "\n" ;
-                                    result1 = result1 + "\n" + result;
-                                    tv_recommend.setText(result1);
-                                }
+                    while (true) {
+                        for (int i = 0; i < count_result.size(); i++) {
+                            if (count_result.get(i) == max) {
+                                recommend2.add(recommend.get(i));
+                                result1 += recommend.get(i).getTitle() + "\n";
                             }
                         }
-
+                        if (recommend2.size() > 4) break;//TODO 갯수 수정
+                        if (recommend2.size() == recommend.size())
+                            break;//TODO 추천 메뉴 자체가 4개가 되지 않을 경우 모두 추천되고 머시기 졸려서 생각 못하겠음
+                        max--;
                     }
 
-                    }*/
                     tv_recommend.setText(result1);
                     result1 = "추천 메뉴로는" + result1 + "가 있습니다. 이 중 주문하실 메뉴를 한개만 말씀해 주세요.";
                     VoiceStarting2(result1);
                 }
 
-                } else if (matches.get(0).equals("아니요") || matches.get(0).equals("아니오")) {
-                    finish();
-                } else {
-                    Log.d("kkkkk", "else 실행2");
-                    String result = "예 혹은 아니오로 다시 한번 말씀해주세요.";
-                    VoiceStarting(result);
-                }
+            } else if (matches.get(0).equals("아니요") || matches.get(0).equals("아니오")) {
+                finish();
+            } else {
+                String result = "예 혹은 아니오로 다시 한번 말씀해주세요.";
+                VoiceStarting(result);
             }
+        }
 
         @Override
         public void onPartialResults(Bundle partialResults) {
@@ -492,15 +384,15 @@ public class MenuRecommendActivity extends AppCompatActivity {
 
         @Override
         public void onError(int error) {
-                iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
-                switch (error) {
-                    case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                        VoiceStarting2(result1);
-                        break;
-                    case SpeechRecognizer.ERROR_NO_MATCH:
-                        VoiceStarting2(result1);
-                        break;
-                }
+            iv_recommend.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_none));
+            switch (error) {
+                case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                    VoiceStarting2(result1);
+                    break;
+                case SpeechRecognizer.ERROR_NO_MATCH:
+                    VoiceStarting2(result1);
+                    break;
+            }
 
         }
 
@@ -508,22 +400,20 @@ public class MenuRecommendActivity extends AppCompatActivity {
         public void onResults(Bundle results) {
             int i;
             matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            for (i = 0; i < recommend.size(); i++) {
-                if (matches.get(0).equals(recommend.get(i).getTitle())) {
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("recommend", recommend.get(i).getTitle());
-                    setResult(RESULT_OK, resultIntent);
-                    finish();
-                    break;
-
+            for (i = 0; i < recommend2.size(); i++) {
+                for (int j = 0; j < matches.size(); j++) {
+                    if (matches.get(j).equals(recommend2.get(i).getTitle())) {
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("recommend", recommend2.get(i).getTitle());
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+                        break;
+                    }
                 }
             }
-
-            if(i == recommend.size()) {
+            if (i == recommend2.size()) {
                 String str = "추천 메뉴로 다시 한 번 말씀해주세요.";
                 VoiceStarting2(str + result1);
-                //VoiceStarting2(result);
-                //Log.d("kkkkk11","else문 실행");
             }
         }
 
@@ -548,7 +438,7 @@ public class MenuRecommendActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.35.169:8000/index";
+            String url = "http://172.20.10.3:8000/index";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,

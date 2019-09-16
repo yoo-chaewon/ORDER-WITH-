@@ -72,8 +72,19 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         else if (item.getTitle().equals("라면")) viewHolder.imageView.setImageResource(R.drawable.rameon);
         else if (item.getTitle().equals("떡볶이")) viewHolder.imageView.setImageResource(R.drawable.dduckboggi);
         else if (item.getTitle().equals("김치볶음밥")) viewHolder.imageView.setImageResource(R.drawable.kimchibboggumbab);
-        else if (item.getTitle().equals("김치가츠동")) viewHolder.imageView.setImageResource(R.drawable.kimchigachidong);
-
+        else if (item.getTitle().equals("콩나물김치찌개")) viewHolder.imageView.setImageResource(R.drawable.kongnamoolkimchizzigae);
+        else if (item.getTitle().equals("순두부찌개")) viewHolder.imageView.setImageResource(R.drawable.soondubozzigae);
+        else if (item.getTitle().equals("된장찌개")) viewHolder.imageView.setImageResource(R.drawable.dunjangzzigae);
+        else if (item.getTitle().equals("왕돈가스")) viewHolder.imageView.setImageResource(R.drawable.wangdongass);
+        else if (item.getTitle().equals("치즈돈가스")) viewHolder.imageView.setImageResource(R.drawable.cheezedungass);
+        else if (item.getTitle().equals("샐러드돈가스")) viewHolder.imageView.setImageResource(R.drawable.saladedungass);
+        else if (item.getTitle().equals("오징어덮밥")) viewHolder.imageView.setImageResource(R.drawable.ozzingoddupbab);
+        else if (item.getTitle().equals("불갈비스테이크덮밥")) viewHolder.imageView.setImageResource(R.drawable.bulgalbisteakdubbab);
+        else if (item.getTitle().equals("원조김밥")) viewHolder.imageView.setImageResource(R.drawable.onezokimbab);
+        else if (item.getTitle().equals("치즈김밥")) viewHolder.imageView.setImageResource(R.drawable.cheezekimbab);
+        else if (item.getTitle().equals("일반라면")) viewHolder.imageView.setImageResource(R.drawable.originrameon);
+        else if (item.getTitle().equals("김치라면")) viewHolder.imageView.setImageResource(R.drawable.kimchirameon);
+        else if (item.getTitle().equals("새우볶음밥")) viewHolder.imageView.setImageResource(R.drawable.sawoobbogenbab);
 
         if (mListener != null){
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

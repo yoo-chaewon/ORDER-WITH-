@@ -98,7 +98,7 @@ public class StartActivity extends AppCompatActivity {
     class RequestThread extends Thread {
         @Override
         public void run() {
-            String url = "http://192.168.35.169:8000/menu";
+            String url = "http://172.20.10.3:8000/menu";
             StringRequest request = new StringRequest(
                     Request.Method.GET,
                     url,
