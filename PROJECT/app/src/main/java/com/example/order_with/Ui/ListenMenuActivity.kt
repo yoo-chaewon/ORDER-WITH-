@@ -27,13 +27,9 @@ class ListenMenuActivity : AppCompatActivity() {
     private var matches: ArrayList<String>? = null
     internal var menuVoice: String? = null
 
-
     val addVoice1 = "메뉴안내를 시작하겠습니다. 메뉴 듣기를 중단하고 주문하고자 하면 화면 아무곳을 터치해 주세요. 메뉴에는"
     val addVoice2 = "가 있습니다. 다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요"
     val voice3 = "다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요"
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,9 +75,7 @@ class ListenMenuActivity : AppCompatActivity() {
     }
 
 
-
     fun getData(){
-
         NetworkCore.getNetworkCore<MenuAPI>()
             .getMenuData()
             .subscribeOn(Schedulers.io())
