@@ -12,6 +12,10 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity android:name=".Ui.OrderMenuActivity">
+        </activity>
+        <activity android:name=".Ui.ListenMenuActivity">
+        </activity>
         <activity android:name=".Ui.VoiceStartActivity">
         </activity>
         <activity android:name=".Ui.MainActivity">

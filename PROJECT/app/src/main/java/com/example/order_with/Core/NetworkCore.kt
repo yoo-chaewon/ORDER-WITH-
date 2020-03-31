@@ -8,7 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkCore {
     val api: Retrofit
-    val BASE_URL = "192.168.219.102"
+    val BASE_URL = "http://192.168.219.102:8080"
+    //TODO: BASE_URL 수정
 
     init {
         var okHttpClient = OkHttpClient()

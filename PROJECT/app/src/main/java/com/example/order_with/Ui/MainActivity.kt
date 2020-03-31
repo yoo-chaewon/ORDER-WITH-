@@ -11,6 +11,7 @@ import android.util.Log
 import com.example.order_with.R
 import com.example.order_with.Service.HeadsetReceiver
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 import java.util.Locale.KOREAN
 
 class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
@@ -19,30 +20,42 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS){
-            val result = tts!!.setLanguage(KOREAN)
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
-                Log.e("TTS", "The Language specified is not supported!")
-            }else{
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    tts!!.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, "")
-
-                    tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-                        override fun onStart(utteranceId: String) {}
-
-                        override fun onDone(utteranceId: String) {
-                            tts!!.playSilentUtterance(5000, TextToSpeech.QUEUE_ADD, null)
-                            onInit(status)
-                        }
-
-                        override fun onError(utteranceId: String) {}
-                    })
-                } else {
-                    @Suppress("DEPRECATION")
-                    tts!!.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null)
-                }
-            }
+            makeVoice(startVoice)
         }else{
             Log.e("TTS", "Initialization Failed!")
+        }
+    }
+
+    fun makeVoice(voice: String){
+        val result = tts!!.setLanguage(KOREAN)
+        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
+            Log.e("TTS", "The Language specified is not supported!")
+        }else{
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                tts!!.setLanguage(Locale.KOREAN)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    tts!!.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode().toString() + "")
+                } else {
+                    val map = HashMap<String, String>()
+                    map[TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID] = "MessageId"
+                    tts!!.speak(startVoice, TextToSpeech.QUEUE_FLUSH, map)
+                }
+
+                tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                    override fun onStart(utteranceId: String) {}
+
+                    override fun onDone(utteranceId: String) {
+                        tts!!.playSilentUtterance(5000, TextToSpeech.QUEUE_ADD, null)
+                        makeVoice(startVoice)
+                    }
+
+                    override fun onError(utteranceId: String) {}
+                })
+
+            } else {
+                @Suppress("DEPRECATION")
+                tts!!.speak(voice, TextToSpeech.QUEUE_FLUSH, null)
+            }
         }
     }
 
@@ -66,6 +79,13 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val filter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
         registerReceiver(headsetReceiver, filter)
     }
+
+    override fun onResume() {
+        super.onResume()
+        startVoiceVer()
+        makeVoice(startVoice)
+    }
+
 
     override fun onPause() {
         super.onPause()
