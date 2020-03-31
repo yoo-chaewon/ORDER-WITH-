@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             val nextIntent = Intent(this, VoiceStartActivity::class.java)
             startActivity(nextIntent)
         }
+        makeVoice(startVoice)
     }
 
     fun startVoiceVer(){

@@ -83,7 +83,7 @@
 
 ### 👩‍💻 사용 기술
 
-- Backend
+- [Backend](https://github.com/yoo-chaewon/ORDER-WITH-SERVER)
 
   ```
   - Spring Framework
@@ -108,7 +108,7 @@
 
 
 
-### 🔗 발표 자료
+### 🔗 LINK
 
 > ☝️ [중간발표](https://github.com/yoo-chaewon/ORDER-WITH-ANDROID/blob/dev_yoo/Reference/졸업작품제안서_김미진유채원.pdf)
 >

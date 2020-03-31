@@ -21,7 +21,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_listen_menu.*
 import java.util.*
 
-class ListenMenuActivity : AppCompatActivity() {
+class ListenMenuActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var mRecognizer: SpeechRecognizer? = null
     private var matches: ArrayList<String>? = null
@@ -30,6 +30,23 @@ class ListenMenuActivity : AppCompatActivity() {
     val addVoice1 = "메뉴안내를 시작하겠습니다. 메뉴 듣기를 중단하고 주문하고자 하면 화면 아무곳을 터치해 주세요. 메뉴에는"
     val addVoice2 = "가 있습니다. 다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요"
     val voice3 = "다시 들으려면 메뉴, 주문하고자 하면 주문을 말해주세요"
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val result = tts!!.setLanguage(Locale.KOREAN)
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "The Language specified is not supported!")
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                } else {
+                    @Suppress("DEPRECATION")
+                    tts!!.speak("", TextToSpeech.QUEUE_FLUSH, null)
+                }
+            }
+        } else {
+            Log.e("TTS", "Initialization Failed!")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,20 +61,11 @@ class ListenMenuActivity : AppCompatActivity() {
         getData()
     }
 
-    fun makeVoice(voice: String){
+    fun makeVoice(voice: String) {
         tts = TextToSpeech(this, object : TextToSpeech.OnInitListener {
             override fun onInit(status: Int) {
                 if (status == TextToSpeech.SUCCESS) {
-                    tts!!.setLanguage(Locale.KOREAN)
-                    tts!!.setSpeechRate(1.toFloat())
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        tts!!.speak(voice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode().toString() + "")
-                        //tts.playSilentUtterance(5000, tts.QUEUE_ADD, null);
-                    } else {
-                        val map = HashMap<String, String>()
-                        map[TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID] = "MessageId"
-                        tts!!.speak(voice, TextToSpeech.QUEUE_FLUSH, map)
-                    }
+                    tts!!.speak(voice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode().toString() + "")
 
                     tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                         override fun onStart(utteranceId: String) {}
@@ -75,17 +83,18 @@ class ListenMenuActivity : AppCompatActivity() {
     }
 
 
-    fun getData(){
+    fun getData() {
         NetworkCore.getNetworkCore<MenuAPI>()
             .getMenuData()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 makeVoice(MakingVoiceMenu(it))
-            },{
+            }, {
                 it.printStackTrace()
             })
     }
+
     internal inner class STTThread : Thread() {
         override fun run() {
             val handler = Handler(Looper.getMainLooper())
@@ -144,10 +153,26 @@ class ListenMenuActivity : AppCompatActivity() {
 
     private fun MakingVoiceMenu(menus: Menus): String {
         menuVoice = " "
-        for (item in menus.Menus){
-            menuVoice += item.name + "/"
+        for (item in menus.Menus) {
+            menuVoice += item.name + "" + item.price + "원 " + " "
         }
 
         return addVoice1 + menuVoice + addVoice2
     }
+
+    override fun onPause() {
+        super.onPause()
+        tts!!.stop()
+        tts!!.shutdown()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+    }
+
+
 }

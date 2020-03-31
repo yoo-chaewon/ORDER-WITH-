@@ -1,5 +1,6 @@
 package com.example.order_with.Ui
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +27,7 @@ import kotlinx.android.synthetic.main.activity_order_menu.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener {
+class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener , TextToSpeech.OnInitListener {
     override fun onItemClicked(menu: Menu, position: Int) {
         val selectMenu = Menu(menu.name, menu.num, menu.price)
         menuList!!.add(selectMenu)
@@ -44,6 +45,44 @@ class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener {
     private var matches: java.util.ArrayList<String>? = null
     internal var flag: Int = 0
 
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS){
+            val result = tts!!.setLanguage(Locale.KOREAN)
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
+                Log.e("TTS", "The Language specified is not supported!")
+            }else{
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    makeVoice(startVoice)
+                } else {
+                    @Suppress("DEPRECATION")
+                    tts!!.speak(startVoice, TextToSpeech.QUEUE_FLUSH, null)
+                }
+            }
+        }else{
+            Log.e("TTS", "Initialization Failed!")
+        }
+    }
+
+    fun makeVoice(voice: String) {
+        tts = TextToSpeech(this, object : TextToSpeech.OnInitListener {
+            override fun onInit(status: Int) {
+                if (status == TextToSpeech.SUCCESS) {
+                    tts!!.speak(voice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode().toString() + "")
+
+                    tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String) {}
+
+                        override fun onDone(utteranceId: String) {
+                            val sttThread = STTThread()
+                            sttThread.start()
+                        }
+
+                        override fun onError(utteranceId: String) {}
+                    })
+                }
+            }
+        })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,39 +113,46 @@ class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        tts!!.stop()
+        tts!!.shutdown()
+    }
 
-    fun makeVoice(voice: String) {
-        tts = TextToSpeech(this, object : TextToSpeech.OnInitListener {
-            override fun onInit(status: Int) {
-                if (status == TextToSpeech.SUCCESS) {
-                    tts!!.setLanguage(Locale.KOREAN)
-                    tts!!.setSpeechRate(1.toFloat())
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        tts!!.speak(voice, TextToSpeech.QUEUE_FLUSH, null, this.hashCode().toString() + "")
-                        //tts.playSilentUtterance(5000, tts.QUEUE_ADD, null);
-                    } else {
-                        val map = HashMap<String, String>()
-                        map[TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID] = "MessageId"
-                        tts!!.speak(voice, TextToSpeech.QUEUE_FLUSH, map)
-                    }
+    override fun onDestroy() {
+        super.onDestroy()
+        if (tts != null){
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+    }
 
-                    tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-                        override fun onStart(utteranceId: String) {}
 
-                        override fun onDone(utteranceId: String) {
-                            val sttThread = STTThread()
-                            sttThread.start()
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                3000 -> {
+                    flag = 1
+                    makeVoice("추가로 주문 할 것이 있으면 메뉴를 말하시고, 결제하려면 결제를 말하세요")
+                    val recommend = data!!.getStringExtra("recommend")
+                    for (i in menuList!!.indices) {
+                        if (recommend == menuList!!.get(i).name) {
+                            menuList!!.add(menuList!!.get(i))
+                            mAdapter!!.notifyDataSetChanged()
+                            break
                         }
-
-                        override fun onError(utteranceId: String) {}
-                    })
+                    }
                 }
             }
-        })
+        }
     }
 
     internal inner class STTThread : Thread() {
         override fun run() {
+            Log.d("Test", "STTThread")
             val handler = Handler(Looper.getMainLooper())
             handler.postDelayed({
                 ivOrderMic.setImageDrawable(resources.getDrawable(R.drawable.ic_mic_black_24dp))
@@ -116,6 +162,7 @@ class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener {
     }
 
     private fun StartSTT() {
+        Log.d("test", "startSTT")
         intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
         mRecognizer = SpeechRecognizer.createSpeechRecognizer(applicationContext)
@@ -124,6 +171,14 @@ class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener {
     }
 
     var listener: RecognitionListener = object : RecognitionListener {
+        override fun onResults(results: Bundle) {
+            matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+            Log.d("Test", "Result" + matches!!.get(0))
+
+            VoiceMatch(matches!!.get(0))
+            makeVoice(ordermoreVoice)
+        }
+
         override fun onReadyForSpeech(params: Bundle) {}
         override fun onBeginningOfSpeech() {}
         override fun onRmsChanged(rmsdB: Float) {}
@@ -148,11 +203,6 @@ class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener {
             }
         }
 
-        override fun onResults(results: Bundle) {
-            matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-            VoiceMatch(matches!!.get(0))
-            makeVoice(ordermoreVoice)
-        }
 
         override fun onPartialResults(partialResults: Bundle) {}
 
@@ -160,6 +210,7 @@ class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener {
     }
 
     fun VoiceMatch(match: String) {
+        Log.d("Test", "VoiceMatch" + match)
         var i = 0
 
         if (match == "결제") {
@@ -207,4 +258,11 @@ class OrderMenuActivity : AppCompatActivity(), MenuAdapter.MyClickListener {
                 it.printStackTrace()
             })
     }
+
+//    override fun onPause() {
+//        super.onPause()
+//        tts!!.stop()
+//        tts!!.shutdown()
+//
+//    }
 }
