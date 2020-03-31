@@ -104,7 +104,7 @@
 
 ### 🔎 Preview
 
-
+👉 [보러가기](https://github.com/yoo-chaewon/ORDER-WITH-ANDROID/blob/dev_yoo/Reference/졸업작품데모보고서.pdf)
 
 
 
