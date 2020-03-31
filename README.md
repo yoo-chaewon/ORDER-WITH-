@@ -69,6 +69,8 @@
 
    <img src="/Reference/images/swArc.png" width="50%" height="50%"></img>
 
+
+
 ### 🧐 알고리즘 소개
 
 1. 메뉴를 인덱싱 하며, 메뉴 input이 들어오면 빈도수를 계산
