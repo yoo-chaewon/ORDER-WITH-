@@ -112,4 +112,4 @@
 
 > ☝️ [중간발표](https://github.com/yoo-chaewon/ORDER-WITH-ANDROID/blob/dev_yoo/Reference/졸업작품제안서_김미진유채원.pdf)
 >
-> ✌️ [최종발표](https://github.com/yoo-chaewon/ORDER-WITH-ANDROID/blob/dev_yoo/Reference/졸업작품 최종심사_김미진,유채원.pdf)
+> ✌️ [최종발표](https://github.com/yoo-chaewon/ORDER-WITH-ANDROID/blob/dev_yoo/Reference/졸업작품%20최종심사_김미진%2C유채원.pdf)
