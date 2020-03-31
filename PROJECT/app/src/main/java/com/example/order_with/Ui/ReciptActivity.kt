@@ -1,22 +1,16 @@
 package com.example.order_with.Ui
 
-import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
-import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import android.widget.TextView
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.order_with.Adapter.MenuAdapter
 import com.example.order_with.Data.Menu
 import com.example.order_with.R
-import kotlinx.android.synthetic.main.activity_order_menu.*
 import kotlinx.android.synthetic.main.activity_recipt.*
 import java.util.*
 
